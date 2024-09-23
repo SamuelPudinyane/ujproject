@@ -22,6 +22,7 @@ cursor.execute('''
     )
 ''')
 
+
 cursor.execute('''  CREATE TABLE IF NOT EXISTS User (
         userId INTEGER PRIMARY KEY,
         first_name TEXT NOT NULL,
@@ -38,6 +39,7 @@ cursor.execute('''  CREATE TABLE IF NOT EXISTS User (
         images TEXT
     )
         ''')
+
 
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS Post (

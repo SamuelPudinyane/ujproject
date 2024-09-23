@@ -66,20 +66,28 @@ function selectSuggestion(value, column) {
   </head>
   <body>
     <div class="container-fluid nav_header">
+      <div class="top-nav">
+        <a class="navbar-brand logo" href="{{url_for('post')}}">
+          <img class="logo"  src="../static/images/2new logo.png" alt="">
+        </a>
+        <div class="nav-icons">
+            <div class="location">
+                <img src="../static/images/Group 261.png" alt="Location Icon" width="30px">
+                <span>66 Kingsway Ave, Auckland Park,<br> Johannesburg, 2092</span>
+            </div>
+            <div class="phone">
+                <img src="../static/images/Group 244.png" alt="Phone Icon" width="30px"><br>
+                <span>(+27) 87 820 0840</span>
+            </div>
+            <div class="email">
+                <img src="../static/images/Group 257.png" alt="Email Icon" width="30px">
+                <span>systemsadmin@jbs.ac.za</span>
+            </div>
+        </div>
+    </div>
       <nav class="navbar navbar-expand-md navbar-light">
           <div class="container">
-            <a class="navbar-brand logo_img" href="{{url_for('post')}}">
-              <img  src="../static/images/2new orginio.png" alt="">
-            </a>
-            <div class="menuList">
-              <div class="contacts">
-                <div><img src="../static/images/Group 261.png" alt="image"><p>66 Kingsway Ave, Auckland Park,<br>Johannesburg, 2092</p></div>
-              <div><img src="../static/images/Group 244.png" alt="Location Icon" ><p>(+27) 87 820 0840</p></div>
-              <div><img src="../static/images/Group 257.png" alt="Email Icon" ><p>systemsadmin@jbs.ac.za</p></div>
-              </div>
-              
-              </button>
-            </div>
+            
             
           </div>
         </nav>

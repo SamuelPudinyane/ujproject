@@ -1,6 +1,6 @@
 from flask import Flask,redirect,url_for,render_template,request,jsonify,session,flash
-from user_validation import matchPassword,encryptdata
-from user import (updatePassword,sharing,likes_update_table_row,increase_like_count,update_likes_delete,decrease_like_count,user_has_liked_post,loadCommentsandUser
+from .user_validation import matchPassword,encryptdata
+from .user import (updatePassword,sharing,likes_update_table_row,increase_like_count,update_likes_delete,decrease_like_count,user_has_liked_post,loadCommentsandUser
                   ,loadComments,insert_comment,updateMedia,updateDescription,updateTitle,get_one_post,deletelikes,deletereplies,deletecomments,deleteshare
                   ,deletepost,get_post,retrieve_media,activeusers,loadPosts,insertUserIntodb,loginCredentials,selectAllfromUser_with_Id,emailExists
                   ,selectAllfromUser,insertBio,insertOccupation,insertContact,insertAddress,insertPostal,insertInterests,insertImage,insertPost,user_has_liked_post
@@ -9,7 +9,7 @@ from user import (updatePassword,sharing,likes_update_table_row,increase_like_co
 # from webscrapping import fetch_and_parse
 import base64
 import io
-from datafile import data
+from .datafile import data
 from PIL import Image
 import cv2
 import os
@@ -28,12 +28,12 @@ from email.mime.multipart import MIMEMultipart
 import smtplib
 import schedule
 from datetime import datetime, timedelta
-from datafile import data
+
 
 
 
 app=Flask(__name__)
-
+    
 app.secret_key="session"
 
 csrf = CSRFProtect(app)
@@ -54,9 +54,9 @@ mail = Mail(app)
 
 comment_list=[]
 comments={}
-import socket
-socket.getaddrinfo('127.0.0.1', 8000)
-port = int(os.environ.get('FLASK_RUN_PORT', 8000))
+# import socket
+# socket.getaddrinfo('127.0.0.1', 8000)
+# port = int(os.environ.get('FLASK_RUN_PORT', 8000))
 
 @app.route("/",methods=["POST","GET"])
 
@@ -252,7 +252,7 @@ def submit_survey(id):
             responses[question_id] = value
     insert_customSurvey_answer(id,userId,json.dumps(responses))
     # Redirect to a 'Thank You' page or another route after processing
-    return redirect(url_for('thank_you'))
+    return redirect('http://127.0.0.1:5000/home')
 
 
     
@@ -346,11 +346,11 @@ def login():
         email=request.form["email"]
         session["email"]=email
         password=request.form["password"]
-        
+        print(password)
         password=encryptdata(password.strip())
         
         user_credentials= loginCredentials(email,password)
-        
+        print(password,email)
         # counts=jsonify(counts)
         user=selectAllfromUser(email)
         media=[]
@@ -871,8 +871,7 @@ def search():
         profileimage = userdata['images']
         return render_template("post.html",funds=funds,post=post,user=userdata,profileimage=profileimage)
 
-
+from werkzeug.serving import run_simple
 if __name__ =="__main__":
-
-    app.run(debug=os.getenv('FLASK_ENV')=='development', port=port)
+    run_simple('localhost', 8000, app, use_reloader=True, processes=1)
     
