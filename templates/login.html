@@ -1,24 +1,170 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blog - Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="icon" type="image/svg+xml" href="../static/images/dummy/UJlogo.jpg">
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/alpinejs" defer></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../static/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../static/css/style.css" />
+    <style>
+        body {
+            background: linear-gradient(135deg, #D2B48C 0%, #8B4513 50%, #DEB887 100%);
+            min-height: 100vh;
+        }
+        .nav-btn:hover {
+            background: linear-gradient(135deg, #A0522D 0%, #8B4513 50%, #654321 100%) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4) !important;
+            color: #FFF8DC !important;
+        }
+    </style>
+    <script>
+        function fetchSuggestions() {
+            const query = document.getElementById('searchInput').value;
+            if (query.length > 2) {
+                fetch(`/search_suggestions?q=${query}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        let suggestionsBox = document.getElementById("suggestionsBox");
+                        suggestionsBox.innerHTML = "";
+                        data.forEach(item => {
+                            let suggestion = document.createElement("div");
+                            suggestion.innerHTML = item[0];
+                            suggestion.dataset.column = item[1];
+                            suggestion.classList.add('suggestion-item');
+                            suggestion.onclick = function() {
+                                selectSuggestion(item[0], item[1]);
+                            };
+                            suggestionsBox.appendChild(suggestion);
+                        });
+                    });
+            }
+        }
 
-{%block content%}
-<div class="row">
+        function selectSuggestion(value, column) {
+            document.getElementById('searchInput').value = value;
+            suggestionsBox.innerHTML="";
+        }
+    </script>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="top-nav" style="background: linear-gradient(135deg, #D2B48C 0%, #8B4513 50%, #DEB887 100%); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); padding: 10px 0;">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="navbar-brand">
+                    <h4 style="color: #FFF8DC; margin: 0;">UJ Project</h4>
+                </div>
+                <div class="d-flex flex-wrap">
+                    <a href="{{ url_for('home') }}" class="nav-btn" style="background: linear-gradient(135deg, #8B4513 0%, #D2B48C 50%, #A0522D 100%); border: 2px solid #654321; color: #FFF8DC; padding: 8px 16px; margin: 0 5px; border-radius: 8px; text-decoration: none; display: inline-block; transition: all 0.3s ease; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                    <a href="{{ url_for('createAccount') }}" class="nav-btn" style="background: linear-gradient(135deg, #8B4513 0%, #D2B48C 50%, #A0522D 100%); border: 2px solid #654321; color: #FFF8DC; padding: 8px 16px; margin: 0 5px; border-radius: 8px; text-decoration: none; display: inline-block; transition: all 0.3s ease; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);">
+                        <i class="fas fa-user-plus"></i> Create Account
+                    </a>
+                    <a href="{{ url_for('login') }}" class="nav-btn" style="background: linear-gradient(135deg, #8B4513 0%, #D2B48C 50%, #A0522D 100%); border: 2px solid #654321; color: #FFF8DC; padding: 8px 16px; margin: 0 5px; border-radius: 8px; text-decoration: none; display: inline-block; transition: all 0.3s ease; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);">
+                        <i class="fas fa-sign-in-alt"></i> Log In
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Contact Info Section -->
+    <div class="container-fluid" style="background: rgba(139, 69, 19, 0.1); padding: 10px 0;">
+        <div class="container">
+            <div class="contact-info d-flex justify-content-center align-items-center flex-wrap" style="font-size: 0.9em;">
+                <div class="contact-item me-4">
+                    <i class="fas fa-map-marker-alt me-2" style="color: #8B4513;"></i>
+                    <span style="color: #654321;">66 Kingsway Ave, Auckland Park, Johannesburg, 2092</span>
+                </div>
+                <div class="contact-item me-4">
+                    <i class="fas fa-phone me-2" style="color: #8B4513;"></i>
+                    <span style="color: #654321;">(+27) 87 820 0840</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-envelope me-2" style="color: #8B4513;"></i>
+                    <span style="color: #654321;">systemsadmin@jbs.ac.za</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-5 container">
+<div class="min-vh-100 d-flex align-items-center justify-content-center">
   <div class="container">
     <div class="login-form">
-      <h2 class="text-center mb-4">Login</h2>
+      <div class="text-center mb-4">
+        <div class="login-icon">
+          <i class="fas fa-user-circle" style="font-size: 64px; color: #667eea; margin-bottom: 20px;"></i>
+        </div>
+        <h2>Welcome Back</h2>
+        <p style="color: #666; margin-bottom: 30px;">Please sign in to your account</p>
+      </div>
+      
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="alert-container mb-3">
+            {% for category, message in messages %}
+              <div class="alert alert-{{ 'danger' if category == 'error' else 'info' }} alert-dismissible fade show" role="alert" style="border-radius: 12px;">
+                <i class="fas {{ 'fa-exclamation-circle' if category == 'error' else 'fa-info-circle' }}"></i>
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+      
       <form action="/login" method="POST">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <div class="form-group">
-          <input type="email" name="email" class="form-control" placeholder="Email" required="required">
+        <div class="form-group mb-3">
+          <div class="input-group">
+            <span class="input-group-text" style="border-radius: 12px 0 0 12px; border: 2px solid #e1e5e9; background: rgba(255,255,255,0.9);">
+              <i class="fas fa-envelope" style="color: #667eea;"></i>
+            </span>
+            <input type="email" name="email" class="form-control" placeholder="Enter your email" required="required" style="border-radius: 0 12px 12px 0;">
+          </div>
         </div>
-        <div class="form-group">
-          <input type="password" name="password" class="form-control" placeholder="Password" required="required">
+        <div class="form-group mb-4">
+          <div class="input-group">
+            <span class="input-group-text" style="border-radius: 12px 0 0 12px; border: 2px solid #e1e5e9; background: rgba(255,255,255,0.9);">
+              <i class="fas fa-lock" style="color: #667eea;"></i>
+            </span>
+            <input type="password" name="password" class="form-control" placeholder="Enter your password" required="required" style="border-radius: 0 12px 12px 0;">
+          </div>
         </div>
-        <div class="form-group">
-          <button type="submit" class="btn btn-primary btn-block">Log in</button>
+        <div class="form-group mb-4">
+          <button type="submit" class="btn btn-primary btn-block">
+            <i class="fas fa-sign-in-alt me-2"></i>
+            Sign In
+          </button>
         </div>
-        <div class="clearfix">
-          <label class="float-left"><i><a href="{{url_for('reset_password_page')}}">Forgot Password?</a></i></label>
-          <label class="float-right"><i><a href="{{url_for('createAccount')}}">Create new account</a></i></label>
+        <div class="text-center">
+          <div class="mb-3">
+            <a href="{{url_for('reset_password_page')}}" class="text-decoration-none" style="color: #667eea; font-weight: 500;">
+              <i class="fas fa-key me-1"></i>Forgot Password?
+            </a>
+          </div>
+          <div class="divider" style="margin: 20px 0; text-align: center; color: #999;">
+            <span style="background: rgba(255,255,255,0.95); padding: 0 15px;">Don't have an account?</span>
+            <hr style="margin-top: -12px; border-color: #e1e5e9;">
+          </div>
+          <a href="{{url_for('createAccount')}}" class="btn btn-outline-secondary" style="border-radius: 12px; padding: 12px 30px; font-weight: 500;">
+            <i class="fas fa-user-plus me-2"></i>Create New Account
+          </a>
         </div>        
       </form>
     </div>
@@ -35,4 +181,14 @@
       }
     }
   </script>
-{%endblock content%}
+    </div>
+    
+    <script>
+        $(document).ready(function() {
+            $('[data-toggle="collapse"]').collapse();
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

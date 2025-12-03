@@ -1,51 +1,180 @@
-{% extends "base.html" %} {% block buttons %}
-<ul class="navbar-nav ml-auto">
-  <li class="nav-item p-2">
-    <a 
-       name=""
-       type="buttton"
-       class="btn btn-primary"
-       href="{{ url_for('home') }}"
-      >
-       <i class="fas fa-home"></i>
-       Home
-      </a>
-  </li>
-  <li class="nav-item p-2">
-    <a
-      name=""
-      type="button"
-      class="btn btn-primary"
-      href="{{ url_for('loadmessages') }}"
-      ><i class="fas fa-envelope directMessages"></i> Direct Messages</a
-    >
-  </li>
-  <li class="nav-item p-2">
-    <a
-      name="createPost_{{ user.user_id }}"
-      type="button"
-      class="btn btn-primary"
-      href="{{ url_for('createNewPost') }}"
-      ><i class="fas fa-user-plus"></i>
-      Create Post
-    </a>
-  </li>
-  <li class="nav-item p-2">
-    <a
-      type="button"
-      name="logout"
-      class="logout btn btn-primary"
-      href="{{url_for('logout')}}"
-      ><i class="fas fa-sign-out-alt"></i>
-      Log-out
-    </a>
-  </li>
-</ul>
-{% endblock buttons %} {% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blog - Posts</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="icon" type="image/svg+xml" href="../static/images/dummy/UJlogo.jpg">
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/alpinejs" defer></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../static/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../static/css/swiper-fix.css" />
+    <style>
+        body {
+            background: linear-gradient(135deg, #D2B48C 0%, #8B4513 50%, #DEB887 100%);
+            min-height: 100vh;
+            padding-top: 140px; /* Space for fixed navigation */
+        }
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: linear-gradient(135deg, #D2B48C 0%, #8B4513 50%, #DEB887 100%);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            padding: 10px 0;
+        }
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+        }
+        .navbar-brand img {
+            height: 40px;
+            width: auto;
+            margin-right: 10px;
+            border-radius: 5px;
+        }
+        .navbar-brand h4 {
+            color: #FFF8DC;
+            margin: 0;
+            font-weight: 600;
+        }
+        .nav-btn {
+            background: linear-gradient(135deg, #8B4513 0%, #D2B48C 50%, #A0522D 100%);
+            border: 2px solid #654321;
+            color: #FFF8DC;
+            padding: 8px 16px;
+            margin: 0 5px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+        }
+        .nav-btn:hover {
+            background: linear-gradient(135deg, #A0522D 0%, #8B4513 50%, #654321 100%) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4) !important;
+            color: #FFF8DC !important;
+        }
+        .contact-info-section {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            background: rgba(139, 69, 19, 0.1);
+            padding: 10px 0;
+        }
+    </style>
+    <script>
+        function fetchSuggestions() {
+            const query = document.getElementById('searchInput').value;
+            if (query.length > 2) {
+                fetch(`/search_suggestions?q=${query}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        let suggestionsBox = document.getElementById("suggestionsBox");
+                        suggestionsBox.innerHTML = "";
+                        data.forEach(item => {
+                            let suggestion = document.createElement("div");
+                            suggestion.innerHTML = item[0];
+                            suggestion.dataset.column = item[1];
+                            suggestion.classList.add('suggestion-item');
+                            suggestion.onclick = function() {
+                                selectSuggestion(item[0], item[1]);
+                            };
+                            suggestionsBox.appendChild(suggestion);
+                        });
+                    });
+            }
+        }
+
+        function selectSuggestion(value, column) {
+            document.getElementById('searchInput').value = value;
+            suggestionsBox.innerHTML="";
+        }
+    </script>
+</head>
+<body>
+     <div class="container-fluid nav_header">
+       <div class="top-nav nav-compact">
+            <div class="d-flex align-items-center">
+                <a class="navbar-brand logo me-4" href="{{url_for('post')}}">
+                  <img class="logo" src="../static/images/2new logo.png" alt="">
+                </a>
+                <div class="contact-info d-none d-lg-flex align-items-center">
+                  <div class="contact-item me-3">
+                    <i class="fas fa-map-marker-alt me-1"></i>
+                    <span>Auckland Park, JHB</span>
+                  </div>
+                  <div class="contact-item me-3">
+                    <i class="fas fa-phone me-1"></i>
+                    <span>(+27) 87 820 0840</span>
+                  </div>
+                </div>
+            </div>
+            
+            <!-- Navigation Buttons -->
+            <div class="nav-buttons d-flex align-items-center flex-wrap" style="gap: 8px;">
+              <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse d-lg-flex" id="navbarNav">
+                <div class="d-flex flex-wrap align-items-center" style="gap: 6px;">
+                  <a class="btn btn-sm nav-compact" href="{{ url_for('post') }}">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                  <a class="btn btn-sm nav-compact" href="{{ url_for('loadmessages') }}">
+                            <i class="fas fa-envelope me-1"></i>Messages
+                        </a>
+                  <a class="btn btn-sm nav-compact" href="{{ url_for('createNewPost') }}">
+                            <i class="fas fa-plus me-1"></i>Create Post
+                        </a>
+                  <a class="btn btn-sm nav-compact" href="{{ url_for('funds') }}">
+                            <i class="fas fa-dollar-sign me-1"></i>Funding
+                        </a>
+                        {% if is_admin %}
+                  <a class="btn btn-sm nav-compact" href="{{ url_for('analytics') }}">
+                            <i class="fas fa-chart-line me-1"></i>Analytics
+                        </a>
+                        {% endif %}
+                  <a class="btn btn-sm nav-compact nav-active" href="{{ url_for('post') }}">
+                            <i class="fas fa-list me-1"></i>Posts
+                        </a>
+                        {% if is_admin %}
+                  <a class="btn btn-sm nav-compact" href="{{ url_for('external_api_config') }}">
+                            <i class="fas fa-cogs me-1"></i>API Config
+                        </a>
+                        {% endif %}
+                  <a class="btn btn-sm nav-compact" href="{{ url_for('userProfile') }}">
+                            <i class="fas fa-user me-1"></i>Profile
+                        </a>
+                  <a class="btn btn-sm nav-compact" href="{{url_for('home')}}" onclick="parent.postMessage('logout', '*')">
+                            <i class="fas fa-sign-out-alt me-1"></i>Log Out
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-5 container">
 
 <div class="row header">
   <div class="container">
-    <div class="content-posts">
+    <div class="content-posts linkedin-layout">
       <div class="col-3 col-md-3 col-sm bio-container">
         <div class="col-md-12">
           <div class="row image_user_infor">
@@ -75,9 +204,6 @@
               <p>Occupation: {{ user.occupation }}</p>
             </div>
           </div>
-          <p>Gender: {{ user.gender }}</p>
-          <hr />
-          <p>Bio: {{ user.bio }}</p>
         </div>
       </div>
         <div class="row m-2">
@@ -87,7 +213,6 @@
               <div class="row search">
                   <div class="container searchSection col-md-8">
                     <form action="/search" method="post">
-                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                       <div class="input-group ">
                           <input name="searchBox" type="text" id="searchInput" onkeyup="fetchSuggestions()" class="form-control" placeholder="Search...">
                           
@@ -133,15 +258,15 @@
           <div class="swiper">
             <div class="swiper-wrapper">
               <!-- Dynamic media items will be inserted here -->
-              {% for data in data.media%}
+              {% for media_file in data.media%}
               <div class="swiper-slide">
-                {% if data.endswith('.mp4') %}
-                <video controls onclick="openVideo('../{{ data }}')">
-                  <source src="../{{ data }}" type="video/mp4" />
+                {% if media_file.endswith('.mp4') %}
+                <video controls onclick="openVideo('/{{ media_file }}')">
+                  <source src="/{{ media_file }}" type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
                 {% else %}
-                <img src="../{{data}}" alt="image" />
+                <img src="/{{ media_file }}" alt="image" />
                 {% endif %}
               </div>
               {% endfor %}
@@ -162,26 +287,20 @@
           >
             <div class="row">
               <div class="col-md-">
-                <div class="like-comment-share">
                   <!-- Like button -->
-                  <div class="btn-group mr-2" role="group">
+                  <div class="post_container" id="postsGrid">
                     <form
-                      action="{{url_for('like', postid=data['postId'],name=data['title'])}}"
-                      method="Post"
+                      action="{{ url_for('like', postid=data.postId, name=data.title) }}"
+                      method="POST"
                     >
-                      <input
-                        type="hidden"
-                        name="csrf_token"
-                        value="{{ csrf_token() }}"
-                      />
                       <button
                         id="btn_like"
                         type="submit"
                         onclick="Togglebtn()"
                         class="like-btn btn-like-comment-share btn btn-outline-primary"
                       >
-                        <i class="fas fa-thumbs-up" id="like_icon"></i>{{
-                        data.likes }}
+                        <i class="fas fa-thumbs-up" id="like_icon"></i>
+                        {{ data.likes }}
                         <span id="like_text">Likes</span>
                       </button>
                     </form>
@@ -189,24 +308,15 @@
   
                   <!-- Comment button and box -->
                   <div class="btn-group mr-2" role="group">
-                    <form
-                      id="commentsForm"
-                      action="{{url_for('comments_list', postid=data.postId)}}"
-                      method="GET"
-                    >
-                      <input
-                        type="hidden"
-                        name="csrf_token"
-                        value="{{ csrf_token() }}"
-                      />
+                    <form id="commentsForm" action="{{ url_for('comments_list', postid=data.postId) }}" method="GET">
                       <button
-                        id="{{data.postId}}"
+                        id="{{ data.postId }}"
                         type="submit"
-                        @click.prevent="commentBoxOpen = !commentBoxOpen; handleFormSubmit(event)"
+                        onclick="commentBoxOpen = !commentBoxOpen; handleFormSubmit(event)"
                         class="btn_comment btn-like-comment-share btn btn-outline-primary"
                       >
                         <i class="fas fa-comment"></i>
-                        <span>{{ data.comments }}</span>Comments
+                        <span>{{ data.comments }}</span> Comments
                       </button>
                     </form>
                   </div>
@@ -217,16 +327,11 @@
                       action="{{ url_for('share', postid=data.postId) }}"
                       method="GET"
                     >
-                      <input
-                        type="hidden"
-                        name="csrf_token"
-                        value="{{ csrf_token() }}"
-                      />
                       <button
                         onclick="handleFormSubmit_share(event)"
                         id="shareBtn_{{ data.postId }}"
                         type="submit"
-                        class="btn_share btn-like-comment-share btn btn-outline-primary share-button"
+                        class="btn_share btn-like-comment-share btn btn-outline-primary"
                       >
                         <i class="fas fa-share"></i>
                         <span>{{ data.shares }}</span> Share
@@ -237,21 +342,13 @@
                 <div class="comment-box" x-show="commentBoxOpen">
                   <h6>Comments</h6>
                   <div class="comments_outer_div">
-                    <div class="comment_div" id="commentsContainer">
+                    <div class="comment_div" id="commentsContainer_{{data.postId}}">
                       <ul class="comments_ul"></ul>
                     </div>
                   </div>
                   <!-- Comment form -->
                   <div class="mt-2"></div>
-                  <form
-                    action="{{url_for('comments', postid=data.postId)}}"
-                    method="POST"
-                  >
-                    <input
-                      type="hidden"
-                      name="csrf_token"
-                      value="{{ csrf_token() }}"
-                    />
+                  <form action="{{ url_for('comments', postid=data.postId) }}" method="POST">
                     <textarea
                       name="comment"
                       class="form-control"
@@ -267,8 +364,103 @@
                 </div>
               </div>
             </div>
+            <script>
+              // Infinite scroll: fetch and append posts by page
+              (function(){
+                let page = 2; // initial page after server-rendered first page
+                let loading = false;
+                const sentinel = document.getElementById('infiniteScrollSentinel');
+                const grid = document.getElementById('postsGrid');
+
+                if (!sentinel || !grid) return;
+
+                const buildCard = (data) => {
+                  const card = document.createElement('div');
+                  card.className = 'card content-container';
+                  card.innerHTML = `
+                    <div class="card-header">
+                      <h5 id="Username">By: <a href="/selectedUserProfile/${data.user_id}">${data.author}</a></h5>
+                    </div>
+                    <div class="card-body">
+                      <h6 id="title">Title: ${data.title}</h6>
+                      <p id="description">Description: ${data.description}</p>
+                      <small class="datePosted">Posted: ${data.post_date}, ${data.post_time}</small>
+                      <div class="swiper">
+                        <div class="swiper-wrapper">
+                          ${(data.media || []).map(m => `
+                            <div class="swiper-slide">
+                              ${m.endsWith('.mp4')
+                                ? `<video controls><source src="/${m}" type="video/mp4" /></video>`
+                                : `<img src="/${m}" alt="image" />`
+                              }
+                            </div>`).join('')}
+                        </div>
+                        <div class="swiper-pagination"></div>
+                        <div class="swiper-button-prev"></div>
+                        <div class="swiper-button-next"></div>
+                      </div>
+                      <div class="share-icons" id="shareIcons_${data.postId}"></div>
+                      <div class="container share-like-comment">
+                        <div class="row">
+                          <div class="col-md-">
+                            <div class="like-comment-share">
+                              <div class="btn-group mr-2" role="group">
+                                <form action="/like/${data.postId}?name=${encodeURIComponent(data.title)}" method="Post">
+                                  <button id="btn_like" type="submit" class="like-btn btn-like-comment-share btn btn-outline-primary">
+                                    <i class="fas fa-thumbs-up" id="like_icon"></i>${data.likes} <span id="like_text">Likes</span>
+                                  </button>
+                                </form>
+                              </div>
+                              <div class="btn-group mr-2" role="group">
+                                <form id="commentsForm" action="/comments_list/${data.postId}" method="GET">
+                                  <button id="${data.postId}" type="submit" class="btn_comment btn-like-comment-share btn btn-outline-primary">
+                                    <i class="fas fa-comment"></i>
+                                    <span>${data.comments}</span>Comments
+                                  </button>
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>`;
+                  return card;
+                };
+
+                const loadMore = async () => {
+                  if (loading) return;
+                  loading = true;
+                  try {
+                    const res = await fetch(`/post?page=${page}`, { headers: { 'Accept': 'application/json' }});
+                    if (!res.ok) { loading = false; return; }
+                    const json = await res.json();
+                    const items = Array.isArray(json.posts) ? json.posts : json; // support either shape
+                    if (!items || items.length === 0) {
+                      observer.disconnect();
+                      return;
+                    }
+                    items.forEach(item => grid.appendChild(buildCard(item)));
+                    page += 1;
+                  } catch (e) {
+                    console.warn('Infinite scroll load error', e);
+                  } finally {
+                    loading = false;
+                  }
+                };
+
+                const observer = new IntersectionObserver((entries)=>{
+                  entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                      loadMore();
+                    }
+                  });
+                }, { rootMargin: '200px' });
+                observer.observe(sentinel);
+              })();
+            </script>
           </div>
         </div>
+        <!-- Right rail removed per request -->
       </div>
   
       {% endfor %} {% endif %}
@@ -316,8 +508,64 @@
 
         observer.observe(loadMoreTrigger);
       });
-
-      function toggleReadMore(id) {
+      document.querySelectorAll('.btn_comment').forEach(button => {
+        button.addEventListener('click', function() {
+            const postId = this.getAttribute('id');  // Get the post ID from the button ID
+            
+            // Fetch comments for the selected post
+            fetch(`/comments_list/${postId}`)
+                .then(response => response.json())
+                .then(data => {
+                    
+                    
+                    // Target the specific comments container for this post
+                    const commentsContainer = document.querySelector(`#commentsContainer_${postId} ul.comments_ul`);
+                    commentsContainer.innerHTML = '';  // Clear existing comments
+    
+                    // If there are comments, append them to the ul
+                    if (data.length > 0) {
+                      data=JSON.parse(data)
+                     
+                        data.forEach(comment => {
+                           
+                          const li = document.createElement('li');
+                          li.classList.add('comment-li');
+                          // Create the h2 for the name
+                          const nameHeader = document.createElement('h6');
+                          nameHeader.className = 'comment-name';
+                          nameHeader.textContent = `${comment.first_name} ${comment.last_name}`;
+                          
+                          // Create the paragraph for the date
+                          const dateParagraph = document.createElement('p');
+                          dateParagraph.className = 'comment-date';
+                          dateParagraph.textContent = `${comment.post_date} ${comment.post_time}`;
+                          
+                          // Create the paragraph for the text
+                          const textParagraph = document.createElement('p');
+                          textParagraph.className = 'comment-text';
+                          textParagraph.textContent = comment.text;
+                          
+                          // Append all elements to the li
+                          li.appendChild(nameHeader);
+                          li.appendChild(dateParagraph);
+                          li.appendChild(textParagraph);
+                          
+                          // Add li to the comments container
+                          commentsContainer.appendChild(li);
+                        });
+                    } else {
+                        // If no comments, show a "No comments" message
+                        const li = document.createElement('li');
+                        li.textContent = 'No comments yet.';
+                        commentsContainer.appendChild(li);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching comments:', error);
+                });
+        });
+    });
+          function toggleReadMore(id) {
         var moreText = document.getElementById(id);
         if (moreText.style.display === "none") {
           moreText.style.display = "block";
@@ -427,6 +675,118 @@
         btn_share[i].addEventListener("click", handleFormSubmit_share);
       }
       
+      async function copyToClipboard(text) {
+        try {
+          await navigator.clipboard.writeText(text);
+          // Show toast notification
+          showToast('Content copied to clipboard!', 'success');
+        } catch (err) {
+          console.error('Failed to copy: ', err);
+          // Fallback for older browsers
+          const textArea = document.createElement('textarea');
+          textArea.value = text;
+          document.body.appendChild(textArea);
+          textArea.focus();
+          textArea.select();
+          try {
+            document.execCommand('copy');
+            showToast('Content copied to clipboard!', 'success');
+          } catch (fallbackErr) {
+            console.error('Fallback copy failed: ', fallbackErr);
+            showToast('Failed to copy content', 'error');
+          }
+          document.body.removeChild(textArea);
+        }
+      }
+
+      async function copyContentWithMedia(content, mediaUrls) {
+        try {
+          // Enhanced content with media information
+          let enhancedContent = content;
+          
+          if (mediaUrls && mediaUrls.length > 0) {
+            enhancedContent += '\n\n🎬 Media Files:\n';
+            mediaUrls.forEach((url, index) => {
+              enhancedContent += `${index + 1}. ${url}\n`;
+            });
+            enhancedContent += '\n💡 Tip: Right-click the media links above and "Save link as" to download files for uploading to social media.';
+          }
+          
+          // Try modern clipboard API first
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(enhancedContent);
+            return true;
+          } else {
+            // Fallback method
+            const textArea = document.createElement('textarea');
+            textArea.value = enhancedContent;
+            textArea.style.position = 'fixed';
+            textArea.style.opacity = '0';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            const successful = document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            if (!successful) {
+              throw new Error('Copy command failed');
+            }
+            return true;
+          }
+        } catch (error) {
+          console.error('Enhanced copy failed:', error);
+          // Simple fallback
+          return await copyToClipboard(content);
+        }
+      }
+
+      function showToast(message, type = 'info') {
+        // Remove existing toast if any
+        const existingToast = document.querySelector('.toast-notification');
+        if (existingToast) {
+          existingToast.remove();
+        }
+
+        // Create toast element
+        const toast = document.createElement('div');
+        toast.className = `toast-notification toast-${type}`;
+        toast.innerHTML = `
+          <div class="toast-content">
+            <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+            <span>${message}</span>
+          </div>
+        `;
+        
+        // Add styles
+        toast.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: ${type === 'success' ? '#4CAF50' : '#f44336'};
+          color: white;
+          padding: 15px 20px;
+          border-radius: 12px;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+          z-index: 10000;
+          animation: slideIn 0.3s ease;
+          font-family: 'Inter', sans-serif;
+          font-weight: 500;
+        `;
+
+        document.body.appendChild(toast);
+
+        // Remove toast after 3 seconds
+        setTimeout(() => {
+          toast.style.animation = 'slideOut 0.3s ease';
+          setTimeout(() => {
+            if (toast.parentNode) {
+              toast.parentNode.removeChild(toast);
+            }
+          }, 300);
+        }, 3000);
+      }
+
       async function handleFormSubmit_share(event) {
         event.preventDefault();
         const postId = event.target.id.split("_")[1];
@@ -434,59 +794,140 @@
         try {
           const data = await fetchpost(postId);
           const { title, author, description, media } = data[0];
-      
+          
+          // Process media content
+          let mediaContent = '';
+          let mediaUrls = [];
+          if (media && Array.isArray(media)) {
+            media.forEach(mediaItem => {
+              const fullMediaUrl = window.location.origin + '/' + mediaItem;
+              mediaUrls.push(fullMediaUrl);
+              const fileName = mediaItem.split('/').pop();
+              mediaContent += `\n📎 ${fileName}`;
+            });
+          }
+          
+          // Create enhanced content to share with media
+          const baseContent = `🎯 ${title}\n👤 By: ${author}\n\n📝 ${description}`;
+          const shareContent = baseContent + mediaContent;
+          const fullShareContent = shareContent + `\n\n🔗 View full post: ${window.location.href}`;
+          
           // Create share links dynamically
-          const shareIconContainer = document.getElementById(
-            `shareIcons_${postId}`
-          );
+          const shareIconContainer = document.getElementById(`shareIcons_${postId}`);
           if (shareIconContainer) {
             shareIconContainer.innerHTML = "";
+            
+            // Copy to clipboard button (enhanced with media info)
+            const copyButton = document.createElement("button");
+            copyButton.className = "share-link copy-btn";
+            copyButton.innerHTML = '<i class="fas fa-copy"></i> Copy All';
+            copyButton.onclick = async () => {
+              await copyContentWithMedia(fullShareContent, mediaUrls);
+              showToast('Post content and media links copied to clipboard!', 'success');
+            };
+            
+            // Enhanced Facebook share
             const facebookShareLink = document.createElement("a");
-            facebookShareLink.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-              author
-            )} ${encodeURIComponent(title)} ${encodeURIComponent(description)}`;
-            facebookShareLink.target = "_blank";
-            facebookShareLink.rel = "noopener";
             facebookShareLink.className = "share-link facebook";
-            facebookShareLink.innerHTML =
-              '<i class="fab fa-facebook"></i> Facebook';
+            facebookShareLink.innerHTML = '<i class="fab fa-facebook"></i> Facebook';
+            facebookShareLink.onclick = async (e) => {
+              e.preventDefault();
+              await copyContentWithMedia(fullShareContent, mediaUrls);
+              // Open Facebook with pre-filled text
+              const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(shareContent)}`;
+              window.open(fbUrl, '_blank', 'width=600,height=400');
+              showToast('Content copied! Paste it in the Facebook post.', 'info');
+            };
       
-            const twitterSharLink = document.createElement("a");
-            twitterSharLink.href = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
-              author
-            )} ${encodeURIComponent(title)} ${encodeURIComponent(
-              description
-            )} ${encodeURIComponent(media)}`;
-            twitterSharLink.target = "_blank";
-            twitterSharLink.rel = "noopener";
-            twitterSharLink.className = "share-link twitter";
-            twitterSharLink.innerText = " Twitter";
+            // Enhanced Twitter share
+            const twitterShareLink = document.createElement("a");
+            twitterShareLink.className = "share-link twitter";
+            twitterShareLink.innerHTML = '<i class="fab fa-twitter"></i> Twitter';
+            twitterShareLink.onclick = async (e) => {
+              e.preventDefault();
+              const twitterText = shareContent.length > 240 ? shareContent.substring(0, 237) + "..." : shareContent;
+              await copyContentWithMedia(fullShareContent, mediaUrls);
+              const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(twitterText)}&url=${encodeURIComponent(window.location.href)}`;
+              window.open(twitterUrl, '_blank', 'width=600,height=400');
+              showToast('Content copied! You can paste media links in your tweet.', 'info');
+            };
       
+            // Enhanced WhatsApp share
             const whatsappShareLink = document.createElement("a");
-            whatsappShareLink.href = `whatsapp://send?text=${title} ${author} ${description}`;
-            whatsappShareLink.target = "_blank";
-            whatsappShareLink.rel = "noopener";
             whatsappShareLink.className = "share-link whatsapp";
-            whatsappShareLink.innerHTML =
-              '<i class="fab fa-whatsapp"></i> WhatsApp';
+            whatsappShareLink.innerHTML = '<i class="fab fa-whatsapp"></i> WhatsApp';
+            whatsappShareLink.onclick = async (e) => {
+              e.preventDefault();
+              await copyContentWithMedia(fullShareContent, mediaUrls);
+              const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(fullShareContent)}`;
+              window.open(whatsappUrl, '_blank');
+              showToast('Full content with media links copied and ready to send!', 'success');
+            };
       
+            // Enhanced LinkedIn share
             const linkedInShareLink = document.createElement("a");
-            linkedInShareLink.href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-              author
-            )} ${encodeURIComponent(title)} ${encodeURIComponent(description)}`;
-            linkedInShareLink.target = "_blank";
-            linkedInShareLink.rel = "noopener";
             linkedInShareLink.className = "share-link linkedin";
-            linkedInShareLink.innerHTML =
-              '<i class="fab fa-linkedin"></i> LinkedIn';
+            linkedInShareLink.innerHTML = '<i class="fab fa-linkedin"></i> LinkedIn';
+            linkedInShareLink.onclick = async (e) => {
+              e.preventDefault();
+              await copyContentWithMedia(fullShareContent, mediaUrls);
+              const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}&summary=${encodeURIComponent(shareContent)}`;
+              window.open(linkedinUrl, '_blank', 'width=600,height=400');
+              showToast('Content copied! Paste it in your LinkedIn post.', 'info');
+            };
+
+            // Enhanced Instagram Stories (using navigator.share if available)
+            const instagramShareLink = document.createElement("a");
+            instagramShareLink.className = "share-link instagram";
+            instagramShareLink.innerHTML = '<i class="fab fa-instagram"></i> Instagram';
+            instagramShareLink.onclick = async (e) => {
+              e.preventDefault();
+              await copyContentWithMedia(shareContent, mediaUrls);
+              
+              // Try native sharing first
+              if (navigator.share) {
+                try {
+                  await navigator.share({
+                    title: title,
+                    text: shareContent,
+                    url: window.location.href
+                  });
+                  showToast('Shared via native sharing!', 'success');
+                } catch (shareError) {
+                  // Fallback to copying content
+                  showToast('Content copied! Manually post to Instagram with the copied text.', 'info');
+                }
+              } else {
+                showToast('Content copied! Manually post to Instagram with the copied text.', 'info');
+              }
+            };
+
+            // Telegram share
+            const telegramShareLink = document.createElement("a");
+            telegramShareLink.className = "share-link telegram";
+            telegramShareLink.innerHTML = '<i class="fab fa-telegram"></i> Telegram';
+            telegramShareLink.onclick = async (e) => {
+              e.preventDefault();
+              await copyContentWithMedia(fullShareContent, mediaUrls);
+              const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(shareContent)}`;
+              window.open(telegramUrl, '_blank');
+              showToast('Content with media links ready for Telegram!', 'success');
+            };
       
+            shareIconContainer.appendChild(copyButton);
             shareIconContainer.appendChild(facebookShareLink);
-            shareIconContainer.appendChild(twitterSharLink);
+            shareIconContainer.appendChild(twitterShareLink);
             shareIconContainer.appendChild(whatsappShareLink);
             shareIconContainer.appendChild(linkedInShareLink);
+            shareIconContainer.appendChild(instagramShareLink);
+            shareIconContainer.appendChild(telegramShareLink);
+            
+            // Show success message
+            showToast('Enhanced sharing options ready! Content and media will be copied for each platform.', 'success');
           }
         } catch (error) {
           console.error("Error fetching post:", error);
+          showToast('Error loading share options', 'error');
         }
       }
       
@@ -506,9 +947,121 @@
           throw error;
         }
       }
+      // Initialize Swiper sliders
+      function initializeSwiper() {
+        // Wait for all Swiper containers to be in DOM
+        const swiperContainers = document.querySelectorAll('.swiper');
+        console.log('Found swiper containers:', swiperContainers.length);
+        
+        swiperContainers.forEach((container, index) => {
+          // Create unique class names for each swiper instance
+          const uniqueClass = `swiper-${index}`;
+          container.classList.add(uniqueClass);
+          
+          // Check if navigation buttons exist
+          const nextBtn = container.querySelector('.swiper-button-next');
+          const prevBtn = container.querySelector('.swiper-button-prev');
+          console.log(`Swiper ${index}: Next button found:`, !!nextBtn, 'Prev button found:', !!prevBtn);
+          
+          // Initialize Swiper for each container
+          const swiper = new Swiper(`.${uniqueClass}`, {
+            loop: false,
+            spaceBetween: 10,
+            slidesPerView: 1,
+            centeredSlides: true,
+            autoHeight: false,
+            pagination: {
+              el: `.${uniqueClass} .swiper-pagination`,
+              clickable: true,
+              dynamicBullets: true,
+            },
+            navigation: {
+              nextEl: `.${uniqueClass} .swiper-button-next`,
+              prevEl: `.${uniqueClass} .swiper-button-prev`,
+            },
+            keyboard: {
+              enabled: true,
+            },
+            mousewheel: {
+              forceToAxis: true,
+            },
+            effect: 'slide',
+            speed: 600,
+            grabCursor: true,
+            // Responsive breakpoints
+            breakpoints: {
+              480: {
+                slidesPerView: 1,
+                spaceBetween: 10
+              },
+              768: {
+                slidesPerView: 1,
+                spaceBetween: 15
+              },
+              1024: {
+                slidesPerView: 1,
+                spaceBetween: 20
+              }
+            },
+            on: {
+              init: function () {
+                console.log(`Swiper ${index} initialized successfully`);
+                console.log('Navigation buttons:', this.navigation);
+              }
+            }
+          });
+          
+          console.log(`Swiper ${index} created:`, swiper);
+        });
+      }
+      
+      // Fallback simple swiper initialization
+      function initializeSwiperSimple() {
+        setTimeout(() => {
+          try {
+            const swipers = document.querySelectorAll('.swiper');
+            swipers.forEach((swiperEl, index) => {
+              if (!swiperEl.classList.contains('swiper-initialized')) {
+                console.log('Initializing simple swiper', index);
+                const simpleSwiper = new Swiper(swiperEl, {
+                  loop: false,
+                  slidesPerView: 1,
+                  navigation: {
+                    nextEl: swiperEl.querySelector('.swiper-button-next'),
+                    prevEl: swiperEl.querySelector('.swiper-button-prev'),
+                  },
+                  pagination: {
+                    el: swiperEl.querySelector('.swiper-pagination'),
+                    clickable: true,
+                  },
+                });
+                console.log('Simple swiper initialized:', simpleSwiper);
+              }
+            });
+          } catch (error) {
+            console.error('Error initializing simple swiper:', error);
+          }
+        }, 500);
+      }
+
       // Render posts when the page loads
-      document.addEventListener("DOMContentLoaded", renderPosts);
+      document.addEventListener("DOMContentLoaded", function() {
+        renderPosts();
+        // Initialize swipers after posts are rendered
+        setTimeout(initializeSwiper, 100);
+        // Fallback initialization
+        setTimeout(initializeSwiperSimple, 1000);
+      });
     </script>
   </div>
-  {% endblock content %}<br />
-</div>
+    </div>
+    
+    <script>
+        $(document).ready(function() {
+            $('[data-toggle="collapse"]').collapse();
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

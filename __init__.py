@@ -13,4 +13,4 @@ def config(app):
         UPLOAD_FOLDER=UPLOAD_FOLDER
     )
 
-sys.path.append('/path/to/directory/containing/user_validation.py')
+# Remove placeholder path modification that breaks imports

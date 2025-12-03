@@ -1,0 +1,94 @@
+/* Large Screen Layout Fixes */
+
+/* Desktop and Large Screen Optimizations (1200px and above) */
+@media only screen and (min-width: 1200px) {
+  .post_container {
+    max-width: 1000px;
+    margin: 0 auto 20px auto;
+    padding: 30px;
+  }
+  
+  .post {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  .content-container {
+    max-width: 850px;
+    margin: 0 auto;
+  }
+  
+  .swiper {
+    max-width: 800px;
+  }
+  
+  .fixed-width-card {
+    max-width: 800px;
+  }
+  
+  /* Improve button spacing on larger screens */
+  .btn-like-comment-share {
+    padding: 12px 25px;
+    margin-right: 15px;
+    font-size: 16px;
+  }
+  
+  /* Better spacing for large screens */
+  .like-comment-share {
+    justify-content: center;
+    gap: 20px;
+  }
+}
+
+/* Extra Large Screens (1400px and above) */
+@media only screen and (min-width: 1400px) {
+  .post_container {
+    max-width: 1200px;
+    padding: 40px;
+  }
+  
+  .post {
+    max-width: 1000px;
+  }
+  
+  .content-container {
+    max-width: 950px;
+  }
+  
+  .swiper {
+    max-width: 900px;
+  }
+}
+
+/* Ultra Wide Screens (1600px and above) */
+@media only screen and (min-width: 1600px) {
+  .post_container {
+    max-width: 1400px;
+  }
+  
+  .post {
+    max-width: 1200px;
+  }
+  
+  .content-container {
+    max-width: 1150px;
+  }
+  
+  .swiper {
+    max-width: 1000px;
+  }
+  
+  /* Center main content on ultra-wide screens */
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .main-content {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+}

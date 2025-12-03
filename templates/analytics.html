@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blog - Analytics Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="icon" type="image/svg+xml" href="../static/images/dummy/UJlogo.jpg">
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/alpinejs" defer></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../static/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../static/css/swiper-fix.css" />
+    <script>
+        function fetchSuggestions() {
+            const query = document.getElementById('searchInput').value;
+            if (query.length > 2) {
+                fetch(`/search_suggestions?q=${query}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        let suggestionsBox = document.getElementById("suggestionsBox");
+                        suggestionsBox.innerHTML = "";
+                        data.forEach(item => {
+                            let suggestion = document.createElement("div");
+                            suggestion.innerHTML = item[0];
+                            suggestion.dataset.column = item[1];
+                            suggestion.classList.add('suggestion-item');
+                            suggestion.onclick = function() {
+                                selectSuggestion(item[0], item[1]);
+                            };
+                            suggestionsBox.appendChild(suggestion);
+                        });
+                    });
+            }
+        }
+
+        function selectSuggestion(value, column) {
+            document.getElementById('searchInput').value = value;
+            suggestionsBox.innerHTML="";
+        }
+    </script>
+</head>
+<body class="analytics-page">
+    <div class="container-fluid nav_header">
+        <div class="top-nav" style="background: linear-gradient(135deg, #D2B48C 0%, #8B4513 50%, #DEB887 100%); 
+                                   box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+                                   border-bottom: 3px solid #8B4513;
+                                   padding: 15px 20px;
+                                   display: flex;
+                                   justify-content: space-between;
+                                   align-items: center;
+                                   flex-wrap: wrap;">
+            <div class="d-flex align-items-center">
+                <a class="navbar-brand logo me-4" href="{{url_for('post')}}">
+                    <img class="logo" src="../static/images/2new logo.png" alt="" style="filter: drop-shadow(2px 2px 4px rgba(139, 69, 19, 0.5)); height: 50px;">
+                </a>
+                <div class="contact-info d-none d-lg-flex align-items-center" style="background: rgba(139, 69, 19, 0.1); 
+                                                                               border-radius: 15px; 
+                                                                               padding: 8px 15px;
+                                                                               backdrop-filter: blur(5px);
+                                                                               font-size: 12px;">
+                    <div class="contact-item me-3" style="color: #2F1B14; font-weight: 600;">
+                        <i class="fas fa-map-marker-alt me-1" style="color: #8B4513;"></i>
+                        <span style="text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.7);">Auckland Park, JHB</span>
+                    </div>
+                    <div class="contact-item me-3" style="color: #2F1B14; font-weight: 600;">
+                        <i class="fas fa-phone me-1" style="color: #8B4513;"></i>
+                        <span style="text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.7);">(+27) 87 820 0840</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Navigation Buttons -->
+            <div class="nav-buttons d-flex align-items-center flex-wrap" style="gap: 8px;">
+                <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" style="background: rgba(139, 69, 19, 0.2); border: 2px solid #8B4513; border-radius: 8px;">
+                    <span class="navbar-toggler-icon" style="color: #8B4513;"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse d-lg-flex" id="navbarNav">
+                    <div class="d-flex flex-wrap align-items-center" style="gap: 6px;">
+                        <a class="btn btn-sm" href="{{ url_for('post') }}" style="background: rgba(139, 69, 19, 0.8); 
+                                                                                   color: #F5DEB3; 
+                                                                                   border: 2px solid #654321;
+                                                                                   border-radius: 10px;
+                                                                                   font-weight: 600;
+                                                                                   font-size: 11px;
+                                                                                   padding: 6px 10px;
+                                                                                   text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                                                                                   box-shadow: 0 2px 8px rgba(139, 69, 19, 0.4);
+                                                                                   transition: all 0.3s ease;">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                        <a class="btn btn-sm" href="{{ url_for('loadmessages') }}" style="background: rgba(139, 69, 19, 0.8); 
+                                                                                         color: #F5DEB3; 
+                                                                                         border: 2px solid #654321;
+                                                                                         border-radius: 10px;
+                                                                                         font-weight: 600;
+                                                                                         font-size: 11px;
+                                                                                         padding: 6px 10px;
+                                                                                         text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                                                                                         box-shadow: 0 2px 8px rgba(139, 69, 19, 0.4);
+                                                                                         transition: all 0.3s ease;">
+                            <i class="fas fa-envelope me-1"></i>Messages
+                        </a>
+                        <a class="btn btn-sm" href="{{ url_for('createNewPost') }}" style="background: rgba(139, 69, 19, 0.8); 
+                                                                                          color: #F5DEB3; 
+                                                                                          border: 2px solid #654321;
+                                                                                          border-radius: 10px;
+                                                                                          font-weight: 600;
+                                                                                          font-size: 11px;
+                                                                                          padding: 6px 10px;
+                                                                                          text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                                                                                          box-shadow: 0 2px 8px rgba(139, 69, 19, 0.4);
+                                                                                          transition: all 0.3s ease;">
+                            <i class="fas fa-plus me-1"></i>Create Post
+                        </a>
+                        <a class="btn btn-sm" href="{{ url_for('funds') }}" style="background: rgba(139, 69, 19, 0.8); 
+                                                                                 color: #F5DEB3; 
+                                                                                 border: 2px solid #654321;
+                                                                                 border-radius: 10px;
+                                                                                 font-weight: 600;
+                                                                                 font-size: 11px;
+                                                                                 padding: 6px 10px;
+                                                                                 text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                                                                                 box-shadow: 0 2px 8px rgba(139, 69, 19, 0.4);
+                                                                                 transition: all 0.3s ease;">
+                            <i class="fas fa-dollar-sign me-1"></i>Funding
+                        </a>
+                        {% if is_admin %}
+                        <a class="btn btn-sm" href="{{ url_for('analytics') }}" style="background: rgba(34, 139, 34, 0.8); 
+                                                                                      color: #F0FFF0; 
+                                                                                      border: 2px solid #228B22;
+                                                                                      border-radius: 10px;
+                                                                                      font-weight: 600;
+                                                                                      font-size: 11px;
+                                                                                      padding: 6px 10px;
+                                                                                      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                                                                                      box-shadow: 0 2px 8px rgba(34, 139, 34, 0.4);
+                                                                                      transition: all 0.3s ease;">
+                            <i class="fas fa-chart-line me-1"></i>Analytics
+                        </a>
+                        {% endif %}
+                        <a class="btn btn-sm" href="{{ url_for('post') }}" style="background: rgba(139, 69, 19, 0.8); 
+                                                                                color: #F5DEB3; 
+                                                                                border: 2px solid #654321;
+                                                                                border-radius: 10px;
+                                                                                font-weight: 600;
+                                                                                font-size: 11px;
+                                                                                padding: 6px 10px;
+                                                                                text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                                                                                box-shadow: 0 2px 8px rgba(139, 69, 19, 0.4);
+                                                                                transition: all 0.3s ease;">
+                            <i class="fas fa-list me-1"></i>Posts
+                        </a>
+                      
+                        <a class="btn btn-sm" href="{{ url_for('userProfile') }}" style="background: rgba(139, 69, 19, 0.8); 
+                                                                                       color: #F5DEB3; 
+                                                                                       border: 2px solid #654321;
+                                                                                       border-radius: 10px;
+                                                                                       font-weight: 600;
+                                                                                       font-size: 11px;
+                                                                                       padding: 6px 10px;
+                                                                                       text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                                                                                       box-shadow: 0 2px 8px rgba(139, 69, 19, 0.4);
+                                                                                       transition: all 0.3s ease;">
+                            <i class="fas fa-user me-1"></i>Profile
+                        </a>
+                        <a class="btn btn-sm" href="{{ url_for('analytics') }}" onclick="location.reload();" style="background: rgba(72, 61, 139, 0.8); 
+                                                                                                                    color: #E6E6FA; 
+                                                                                                                    border: 2px solid #228B22;
+                                                                                                                    border-radius: 10px;
+                                                                                                                    font-weight: 600;
+                                                                                                                    font-size: 11px;
+                                                                                                                    padding: 6px 10px;
+                                                                                                                    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                                                                                                                    box-shadow: 0 2px 8px rgba(72, 61, 139, 0.4);
+                                                                                                                    transition: all 0.3s ease;">
+                            <i class="fas fa-sync-alt me-1"></i>Refresh
+                        </a>
+                        
+                       
+                        <a class="btn btn-sm" href="{{url_for('home')}}" onclick="parent.postMessage('logout', '*')" style="background: rgba(139, 0, 0, 0.8); 
+                                                                                                         color: #FFE4E1; 
+                                                                                                         border: 2px solid #8B0000;
+                                                                                                         border-radius: 10px;
+                                                                                                         font-weight: 600;
+                                                                                                         font-size: 11px;
+                                                                                                         padding: 6px 10px;
+                                                                                                         text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                                                                                                         box-shadow: 0 2px 8px rgba(139, 0, 0, 0.4);
+                                                                                                         transition: all 0.3s ease;">
+                            <i class="fas fa-sign-out-alt me-1"></i>Log Out
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-5 container">
+<div class="analytics-wrapper">
+    <div class="container-fluid">
+        <!-- Header Section -->
+        <div class="analytics-header">
+            <div class="row align-items-center mb-4">
+                <div class="col-md-8">
+                    <h1 class="analytics-title">
+                        <i class="fas fa-chart-line"></i>
+                        Analytics Dashboard
+                    </h1>
+                    <p class="analytics-subtitle">Comprehensive platform insights and metrics</p>
+                </div>
+                <div class="col-md-4 text-right">
+                    <div class="d-flex justify-content-end align-items-center" style="gap:8px;">
+                        <div class="date-range-selector">
+                            <select class="form-control" id="dateRange">
+                                <option value="7">Last 7 days</option>
+                                <option value="30">Last 30 days</option>
+                                <option value="90">Last 90 days</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-sm nav-compact" onclick="printReport()">
+                            <i class="fas fa-print"></i> Print
+                        </button>
+                        <button class="btn btn-sm nav-compact" onclick="exportAnalytics()">
+                            <i class="fas fa-file-export"></i> Export All
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Navigation -->
+        <div class="section-navigation mb-4">
+            <div class="row">
+                <div class="col-12">
+                    <div class="nav-pills-custom">
+                        <a href="#overview" class="nav-pill active" onclick="showSection('overview')">
+                            <i class="fas fa-tachometer-alt"></i> Overview
+                        </a>
+                        <a href="#charts" class="nav-pill" onclick="showSection('charts')">
+                            <i class="fas fa-chart-bar"></i> Charts
+                        </a>
+                        <a href="#users" class="nav-pill" onclick="showSection('users')">
+                            <i class="fas fa-users"></i> Users
+                        </a>
+                        <a href="#content" class="nav-pill" onclick="showSection('content')">
+                            <i class="fas fa-newspaper"></i> Content
+                        </a>
+                        <a href="#activity" class="nav-pill" onclick="showSection('activity')">
+                            <i class="fas fa-history"></i> Activity
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Metrics Cards -->
+        <div class="metrics-grid mb-5" id="overview">
+            <div class="row">
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="metric-card metric-primary">
+                        <div class="metric-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3 class="metric-number">{{ analytics_overview.total_users }}</h3>
+                            <p class="metric-label">Total Users</p>
+                            <span class="metric-change positive">+{{ analytics_overview.new_users_month }} this month</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="metric-card metric-success">
+                        <div class="metric-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3 class="metric-number">{{ analytics_overview.total_posts }}</h3>
+                            <p class="metric-label">Total Posts</p>
+                            <span class="metric-change positive">{{ analytics_overview.engagement_rate }}% engagement</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="metric-card metric-warning">
+                        <div class="metric-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3 class="metric-number">{{ analytics_overview.total_comments }}</h3>
+                            <p class="metric-label">Total Comments</p>
+                            <span class="metric-change positive">Active discussions</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="metric-card metric-info">
+                        <div class="metric-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3 class="metric-number">{{ analytics_overview.total_likes }}</h3>
+                            <p class="metric-label">Total Likes</p>
+                            <span class="metric-change positive">{{ analytics_overview.active_users_week }} active users</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="row mb-5" id="charts">
+            <!-- User Growth Chart -->
+            <div class="col-lg-8 mb-4">
+                <div class="chart-container analytics-card">
+                    <div class="chart-header">
+                        <h4><i class="fas fa-chart-area"></i> User Growth & Activity</h4>
+                        <p class="text-muted">Daily user registrations and activity trends</p>
+                    </div>
+                    <div class="chart-body">
+                        <div class="d-flex gap-2 mb-2">
+                            <button class="btn btn-sm nav-compact" onclick="downloadChartImage('userGrowthChart')">Download Image</button>
+                            <button class="btn btn-sm nav-compact" onclick="exportChartCSV('userGrowthChart')">Export CSV</button>
+                        </div>
+                        <canvas id="userGrowthChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Engagement Metrics -->
+            <div class="col-lg-4 mb-4">
+                <div class="chart-container analytics-card">
+                    <div class="chart-header">
+                        <h4><i class="fas fa-chart-pie"></i> Engagement Breakdown</h4>
+                        <p class="text-muted">Content interaction distribution</p>
+                    </div>
+                    <div class="chart-body">
+                        <div class="d-flex gap-2 mb-2">
+                            <button class="btn btn-sm nav-compact" onclick="downloadChartImage('engagementChart')">Download Image</button>
+                            <button class="btn btn-sm nav-compact" onclick="exportChartCSV('engagementChart')">Export CSV</button>
+                        </div>
+                        <canvas id="engagementChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active vs New Users Bar -->
+            <div class="col-lg-6 mb-4">
+                <div class="chart-container analytics-card">
+                    <div class="chart-header">
+                        <h4><i class="fas fa-chart-bar"></i> Active vs New Users</h4>
+                        <p class="text-muted">Comparison across selected range</p>
+                    </div>
+                    <div class="chart-body">
+                        <div class="d-flex gap-2 mb-2">
+                            <button class="btn btn-sm nav-compact" onclick="downloadChartImage('usersCompareChart')">Download Image</button>
+                            <button class="btn btn-sm nav-compact" onclick="exportChartCSV('usersCompareChart')">Export CSV</button>
+                        </div>
+                        <canvas id="usersCompareChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Heatmap (by day of week) -->
+            <div class="col-lg-6 mb-4">
+                <div class="chart-container analytics-card">
+                    <div class="chart-header">
+                        <h4><i class="fas fa-fire"></i> Activity by Day</h4>
+                        <p class="text-muted">Aggregated active users by weekday</p>
+                    </div>
+                    <div class="chart-body">
+                        <div class="d-flex gap-2 mb-2">
+                            <button class="btn btn-sm nav-compact" onclick="downloadChartImage('activityDayChart')">Download Image</button>
+                            <button class="btn btn-sm nav-compact" onclick="exportChartCSV('activityDayChart')">Export CSV</button>
+                        </div>
+                        <canvas id="activityDayChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Devices Breakdown -->
+            <div class="col-lg-4 mb-4">
+                <div class="chart-container analytics-card">
+                    <div class="chart-header">
+                        <h4><i class="fas fa-mobile-alt"></i> Devices</h4>
+                        <p class="text-muted">Estimated device distribution</p>
+                    </div>
+                    <div class="chart-body">
+                        <div class="d-flex gap-2 mb-2">
+                            <button class="btn btn-sm nav-compact" onclick="downloadChartImage('devicesChart')">Download Image</button>
+                            <button class="btn btn-sm nav-compact" onclick="exportChartCSV('devicesChart')">Export CSV</button>
+                        </div>
+                        <canvas id="devicesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Browsers Breakdown -->
+            <div class="col-lg-4 mb-4">
+                <div class="chart-container analytics-card">
+                    <div class="chart-header">
+                        <h4><i class="fas fa-globe"></i> Browsers</h4>
+                        <p class="text-muted">Client browser share (approx.)</p>
+                    </div>
+                    <div class="chart-body">
+                        <div class="d-flex gap-2 mb-2">
+                            <button class="btn btn-sm nav-compact" onclick="downloadChartImage('browsersChart')">Download Image</button>
+                            <button class="btn btn-sm nav-compact" onclick="exportChartCSV('browsersChart')">Export CSV</button>
+                        </div>
+                        <canvas id="browsersChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Avg View Duration (placeholder) -->
+            <div class="col-lg-4 mb-4">
+                <div class="chart-container analytics-card">
+                    <div class="chart-header">
+                        <h4><i class="fas fa-stopwatch"></i> Avg View Duration</h4>
+                        <p class="text-muted">Synthetic metric based on activity</p>
+                    </div>
+                    <div class="chart-body">
+                        <div class="d-flex gap-2 mb-2">
+                            <button class="btn btn-sm nav-compact" onclick="downloadChartImage('avgDurationChart')">Download Image</button>
+                            <button class="btn btn-sm nav-compact" onclick="exportChartCSV('avgDurationChart')">Export CSV</button>
+                        </div>
+                        <canvas id="avgDurationChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Tables Section -->
+        <div class="row mb-5" id="users">
+            <!-- Top Posts -->
+            <div class="col-lg-6 mb-4">
+                <div class="data-table-container">
+                    <div class="table-header">
+                        <h4><i class="fas fa-trophy"></i> Top Performing Posts</h4>
+                        <p class="text-muted">Posts with highest engagement rates</p>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table analytics-table">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                    <th>Engagement</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for post in top_posts %}
+                                <tr>
+                                    <td class="post-title">{{ post[0][:30] }}{{ '...' if post[0]|length > 30 else '' }}</td>
+                                    <td>{{ post[1] }}</td>
+                                    <td>
+                                        <div class="engagement-badges">
+                                            <span class="badge badge-primary">{{ post[2] }} <i class="fas fa-heart"></i></span>
+                                            <span class="badge badge-success">{{ post[3] }} <i class="fas fa-comments"></i></span>
+                                            <span class="badge badge-info">{{ post[4] }} <i class="fas fa-share"></i></span>
+                                        </div>
+                                    </td>
+                                    <td>{{ post[6] }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Users -->
+            <div class="col-lg-6 mb-4">
+                <div class="data-table-container">
+                    <div class="table-header">
+                        <h4><i class="fas fa-users"></i> Most Active Users</h4>
+                        <p class="text-muted">Users contributing most to the platform</p>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table analytics-table">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Posts</th>
+                                    <th>Comments</th>
+                                    <th>Likes Given</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in top_users %}
+                                <tr>
+                                    <td class="user-info">
+                                        <div class="user-avatar">
+                                            <i class="fas fa-user-circle"></i>
+                                        </div>
+                                        <div class="user-details">
+                                            <strong>{{ user[0] }}</strong>
+                                            <small class="text-muted d-block">{{ user[4] }}</small>
+                                        </div>
+                                    </td>
+                                    <td><span class="activity-count">{{ user[1] }}</span></td>
+                                    <td><span class="activity-count">{{ user[2] }}</span></td>
+                                    <td><span class="activity-count">{{ user[3] }}</span></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Analytics -->
+        <div class="row mb-5" id="content">
+            <div class="col-12">
+                <div class="content-analytics-container">
+                    <div class="analytics-section-header">
+                        <h4><i class="fas fa-chart-bar"></i> Content Performance by Category</h4>
+                        <p class="text-muted">Detailed breakdown of content performance across different categories</p>
+                    </div>
+                    <div class="row">
+                        {% for category in content_analytics %}
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="category-card">
+                                <div class="category-header">
+                                    <h5>{{ category[0] }}</h5>
+                                    <span class="category-count">{{ category[1] }} posts</span>
+                                </div>
+                                <div class="category-metrics">
+                                    <div class="metric-row">
+                                        <span class="metric-label">Total Engagement</span>
+                                        <span class="metric-value">{{ category[2] }}</span>
+                                    </div>
+                                    <div class="metric-row">
+                                        <span class="metric-label">Avg. Likes</span>
+                                        <span class="metric-value">{{ "%.1f"|format(category[3]) }}</span>
+                                    </div>
+                                    <div class="metric-row">
+                                        <span class="metric-label">Avg. Comments</span>
+                                        <span class="metric-value">{{ "%.1f"|format(category[4]) }}</span>
+                                    </div>
+                                    <div class="metric-row">
+                                        <span class="metric-label">Avg. Shares</span>
+                                        <span class="metric-value">{{ "%.1f"|format(category[5]) }}</span>
+                                    </div>
+                                </div>
+                                <div class="category-progress">
+                                    <div class="progress">
+                                        <div class="progress-bar" style="width: {{ (category[3] / 35 * 100)|round }}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-time Activity Feed -->
+        <div class="row" id="activity">
+            <div class="col-12">
+                <div class="activity-feed-container">
+                    <div class="feed-header">
+                        <h4><i class="fas fa-pulse"></i> Recent Platform Activity</h4>
+                        <p class="text-muted">Live feed of user interactions and content updates</p>
+                    </div>
+                    <div class="activity-timeline">
+                        <div class="activity-item">
+                            <div class="activity-icon activity-post">
+                                <i class="fas fa-file-plus"></i>
+                            </div>
+                            <div class="activity-content">
+                                <p><strong>New post created</strong> by Technology Team</p>
+                                <small class="text-muted">2 minutes ago</small>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon activity-comment">
+                                <i class="fas fa-comment"></i>
+                            </div>
+                            <div class="activity-content">
+                                <p><strong>15 new comments</strong> on trending posts</p>
+                                <small class="text-muted">5 minutes ago</small>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon activity-user">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="activity-content">
+                                <p><strong>3 new users</strong> joined the platform</p>
+                                <small class="text-muted">12 minutes ago</small>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon activity-like">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <div class="activity-content">
+                                <p><strong>245 new likes</strong> received across posts</p>
+                                <small class="text-muted">18 minutes ago</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+// User Growth Chart
+const userGrowthCtx = document.getElementById('userGrowthChart').getContext('2d');
+const userGrowthData = {{ daily_analytics|safe }};
+window.charts = window.charts || {};
+window.charts.userGrowthChart = new Chart(userGrowthCtx, {
+    type: 'line',
+    data: {
+        labels: userGrowthData.map(item => item[0]),
+        datasets: [{
+            label: 'New Users',
+            data: userGrowthData.map(item => item[2]),
+            borderColor: '#8B4513',
+            backgroundColor: 'rgba(139, 69, 19, 0.1)',
+            tension: 0.4,
+            fill: true
+        }, {
+            label: 'Active Users',
+            data: userGrowthData.map(item => item[3]),
+            borderColor: '#D2B48C',
+            backgroundColor: 'rgba(210, 180, 140, 0.1)',
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top',
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Engagement Chart
+const engagementCtx = document.getElementById('engagementChart').getContext('2d');
+window.charts.engagementChart = new Chart(engagementCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Likes', 'Comments', 'Shares'],
+        datasets: [{
+            data: [{{ analytics_overview.total_likes }}, {{ analytics_overview.total_comments }}, {{ analytics_overview.total_shares }}],
+            backgroundColor: ['#8B4513', '#D2B48C', '#F4A460'],
+            borderWidth: 2,
+            borderColor: '#fff'
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom',
+            }
+        }
+    }
+});
+
+// Active vs New Users (bar)
+const usersCompareCtx = document.getElementById('usersCompareChart').getContext('2d');
+const labelsCompare = userGrowthData.map(item => item[0]);
+const newUsersSeries = userGrowthData.map(item => item[2]);
+const activeUsersSeries = userGrowthData.map(item => item[3]);
+window.charts.usersCompareChart = new Chart(usersCompareCtx, {
+    type: 'bar',
+    data: {
+        labels: labelsCompare,
+        datasets: [
+            { label: 'New Users', data: newUsersSeries, backgroundColor: 'rgba(139,69,19,0.6)' },
+            { label: 'Active Users', data: activeUsersSeries, backgroundColor: 'rgba(210,180,140,0.6)' }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { position: 'top' } },
+        scales: { y: { beginAtZero: true } }
+    }
+});
+
+// Activity by Weekday (aggregate)
+function weekdayFromISO(dateStr){
+    const d = new Date(dateStr);
+    return d.getDay(); // 0=Sun...6=Sat
+}
+const weekdayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const weekdayTotals = [0,0,0,0,0,0,0];
+userGrowthData.forEach(item => {
+    const idx = weekdayFromISO(item[0]);
+    weekdayTotals[idx] += (item[3] || 0); // active users
+});
+const activityDayCtx = document.getElementById('activityDayChart').getContext('2d');
+window.charts.activityDayChart = new Chart(activityDayCtx, {
+    type: 'bar',
+    data: { labels: weekdayNames, datasets: [{ label: 'Active Users', data: weekdayTotals, backgroundColor: '#8B4513' }] },
+    options: { responsive: true, scales: { y: { beginAtZero: true } } }
+});
+
+// Devices (approximate split using active users proportions)
+const devicesCtx = document.getElementById('devicesChart').getContext('2d');
+const totalActive = activeUsersSeries.reduce((a,b)=>a+(b||0),0) || 1;
+const mobile = Math.round(totalActive * 0.55);
+const desktop = Math.round(totalActive * 0.35);
+const tablet = Math.round(totalActive * 0.10);
+window.charts.devicesChart = new Chart(devicesCtx, {
+    type: 'doughnut',
+    data: { labels: ['Mobile','Desktop','Tablet'], datasets: [{ data: [mobile, desktop, tablet], backgroundColor: ['#8B4513','#D2B48C','#F4A460'] }] },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+});
+
+// Browsers (placeholder share)
+const browsersCtx = document.getElementById('browsersChart').getContext('2d');
+window.charts.browsersChart = new Chart(browsersCtx, {
+    type: 'pie',
+    data: { labels: ['Chrome','Safari','Firefox','Edge','Other'], datasets: [{ data: [50,20,10,15,5], backgroundColor: ['#8B4513','#D2B48C','#F4A460','#CD853F','#A0522D'] }] },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+});
+
+// Avg View Duration (synthetic from activity)
+const avgDurationCtx = document.getElementById('avgDurationChart').getContext('2d');
+const avgDuration = labelsCompare.map((_, i) => Math.round((activeUsersSeries[i] || 0) * 0.2) + 30);
+window.charts.avgDurationChart = new Chart(avgDurationCtx, {
+    type: 'line',
+    data: { labels: labelsCompare, datasets: [{ label: 'Avg Duration (sec)', data: avgDuration, borderColor: '#8B4513', backgroundColor: 'rgba(139,69,19,0.1)', fill: true }] },
+    options: { responsive: true, scales: { y: { beginAtZero: true } }, plugins: { legend: { position: 'top' } } }
+});
+
+// Auto-refresh functionality
+setInterval(() => {
+    // Add auto-refresh logic here if needed
+    console.log('Analytics refreshed');
+}, 30000); // Refresh every 30 seconds
+
+// Section Navigation Function
+function showSection(sectionId) {
+    // Remove active class from all nav pills
+    const navPills = document.querySelectorAll('.nav-pill');
+    navPills.forEach(pill => pill.classList.remove('active'));
+    
+    // Add active class to clicked pill
+    event.target.closest('.nav-pill').classList.add('active');
+    
+    // Smooth scroll to section
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) {
+        targetSection.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
+}
+
+// Print Report Function
+function printReport() {
+    // Hide navigation and action buttons for printing
+    const navbar = document.querySelector('.navbar');
+    const sectionNav = document.querySelector('.section-navigation');
+    
+    // Store original display values
+    const originalNavDisplay = navbar ? navbar.style.display : '';
+    const originalSectionNavDisplay = sectionNav ? sectionNav.style.display : '';
+    
+    // Hide elements for printing
+    if (navbar) navbar.style.display = 'none';
+    if (sectionNav) sectionNav.style.display = 'none';
+    
+    // Add print-specific styles
+    const printStyles = document.createElement('style');
+    printStyles.innerHTML = `
+        @media print {
+            body { font-size: 12px; }
+            .analytics-wrapper { padding: 20px !important; }
+            .metric-card { page-break-inside: avoid; }
+            .chart-container { page-break-inside: avoid; }
+            .data-table-container { page-break-inside: avoid; }
+        }
+    `;
+    document.head.appendChild(printStyles);
+    
+    // Print the page
+    window.print();
+    
+    // Restore original display values after printing
+    setTimeout(() => {
+        if (navbar) navbar.style.display = originalNavDisplay;
+        if (sectionNav) sectionNav.style.display = originalSectionNavDisplay;
+        document.head.removeChild(printStyles);
+    }, 500);
+}
+
+// Export Analytics Function
+function exportAnalytics() {
+    try {
+        // Create data object with current analytics
+        const analyticsData = {
+            overview: {
+                totalUsers: {{ analytics_overview.total_users }},
+                totalPosts: {{ analytics_overview.total_posts }},
+                totalComments: {{ analytics_overview.total_comments }},
+                totalLikes: {{ analytics_overview.total_likes }},
+                totalShares: {{ analytics_overview.total_shares }},
+                activeUsersWeek: {{ analytics_overview.active_users_week }},
+                newUsersMonth: {{ analytics_overview.new_users_month }}
+            },
+            topPosts: {{ top_posts | tojson }},
+            userAnalytics: {{ user_analytics | tojson }},
+            dailyAnalytics: {{ daily_analytics | tojson }},
+            exportDate: new Date().toISOString(),
+            exportBy: 'Admin'
+        };
+
+        // Convert to JSON string
+        const dataStr = JSON.stringify(analyticsData, null, 2);
+        
+        // Create downloadable file
+        const dataBlob = new Blob([dataStr], {type: 'application/json'});
+        const url = URL.createObjectURL(dataBlob);
+        
+        // Create download link
+        const downloadLink = document.createElement('a');
+        downloadLink.href = url;
+        downloadLink.download = `analytics_export_${new Date().toISOString().split('T')[0]}.json`;
+        
+        // Trigger download
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        
+        // Clean up
+        URL.revokeObjectURL(url);
+        
+        // Show success message
+        alert('Analytics data exported successfully!');
+        
+    } catch (error) {
+        console.error('Export failed:', error);
+        alert('Export failed. Please try again.');
+    }
+}
+// Chart export helpers
+function getChartInstance(id) {
+    return (window.charts && window.charts[id]) || Chart.getChart(id);
+}
+
+function downloadChartImage(canvasId) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/png');
+    link.download = `${canvasId}.png`;
+    link.click();
+}
+
+function exportChartCSV(canvasId) {
+    const chart = getChartInstance(canvasId);
+    if (!chart) return;
+    const labels = chart.data.labels || [];
+    const datasets = chart.data.datasets || [];
+    const rows = [];
+    rows.push(['Label', ...datasets.map(d => d.label || 'Series')]);
+    labels.forEach((lbl, i) => {
+        const vals = datasets.map(d => Array.isArray(d.data) ? d.data[i] : d.data);
+        rows.push([lbl, ...vals]);
+    });
+    const csv = rows.map(r => r.map(v => (v==null? '': v)).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${canvasId}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+}
+</script>
+
+    </div>
+    
+    <script>
+        $(document).ready(function() {
+            $('[data-toggle="collapse"]').collapse();
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

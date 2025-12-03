@@ -1,5 +1,204 @@
-{% extends "base.html" %}
-{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survey - UJ Project</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            background: linear-gradient(135deg, #D2B48C 0%, #8B4513 50%, #DEB887 100%);
+            min-height: 100vh;
+        }
+        .top-nav {
+            background: linear-gradient(135deg, #D2B48C 0%, #8B4513 50%, #DEB887 100%);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            padding: 10px 0;
+        }
+        .nav-btn {
+            background: linear-gradient(135deg, #8B4513 0%, #D2B48C 50%, #A0522D 100%);
+            border: 2px solid #654321;
+            color: #FFF8DC;
+            padding: 8px 16px;
+            margin: 0 5px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+        }
+        .nav-btn:hover {
+            background: linear-gradient(135deg, #A0522D 0%, #8B4513 50%, #654321 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            color: #FFF8DC;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid nav_header">
+        <div class="top-nav" style="background: linear-gradient(135deg, #D2B48C 0%, #8B4513 50%, #DEB887 100%); 
+                                   box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+                                   border-bottom: 3px solid #8B4513;
+                                   padding: 15px 20px;
+                                   display: flex;
+                                   justify-content: space-between;
+                                   align-items: center;
+                                   flex-wrap: wrap;">
+            <div class="d-flex align-items-center">
+                <a class="navbar-brand logo me-4" href="{{url_for('post')}}">
+                    <img class="logo" src="../static/images/2new logo.png" alt="" style="filter: drop-shadow(2px 2px 4px rgba(139, 69, 19, 0.5)); height: 50px;">
+                </a>
+                <div class="contact-info d-none d-lg-flex align-items-center" style="background: rgba(139, 69, 19, 0.1); 
+                                                                               border-radius: 15px; 
+                                                                               padding: 8px 15px;
+                                                                               backdrop-filter: blur(5px);
+                                                                               font-size: 12px;">
+                    <div class="contact-item me-3" style="color: #2F1B14; font-weight: 600;">
+                        <i class="fas fa-map-marker-alt me-1" style="color: #8B4513;"></i>
+                        <span style="text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.7);">Auckland Park, JHB</span>
+                    </div>
+                    <div class="contact-item me-3" style="color: #2F1B14; font-weight: 600;">
+                        <i class="fas fa-phone me-1" style="color: #8B4513;"></i>
+                        <span style="text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.7);">(+27) 87 820 0840</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Navigation Buttons -->
+            <div class="nav-buttons d-flex align-items-center flex-wrap" style="gap: 8px;">
+                <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" style="background: rgba(139, 69, 19, 0.2); border: 2px solid #8B4513; border-radius: 8px;">
+                    <span class="navbar-toggler-icon" style="color: #8B4513;"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse d-lg-flex" id="navbarNav">
+                    <div class="d-flex flex-wrap align-items-center" style="gap: 6px;">
+                        <a class="btn btn-sm" href="{{ url_for('post') }}" style="background: rgba(139, 69, 19, 0.8); 
+                                                                                   color: #F5DEB3; 
+                                                                                   border: 2px solid #654321;
+                                                                                   border-radius: 10px;
+                                                                                   font-weight: 600;
+                                                                                   font-size: 11px;
+                                                                                   padding: 6px 10px;
+                                                                                   text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                                                                                   box-shadow: 0 2px 8px rgba(139, 69, 19, 0.4);
+                                                                                   transition: all 0.3s ease;">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                        <a class="btn btn-sm" href="{{ url_for('loadmessages') }}" style="background: rgba(139, 69, 19, 0.8); 
+                                                                                         color: #F5DEB3; 
+                                                                                         border: 2px solid #654321;
+                                                                                         border-radius: 10px;
+                                                                                         font-weight: 600;
+                                                                                         font-size: 11px;
+                                                                                         padding: 6px 10px;
+                                                                                         text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                                                                                         box-shadow: 0 2px 8px rgba(139, 69, 19, 0.4);
+                                                                                         transition: all 0.3s ease;">
+                            <i class="fas fa-envelope me-1"></i>Messages
+                        </a>
+                        <a class="btn btn-sm" href="{{ url_for('createNewPost') }}" style="background: rgba(139, 69, 19, 0.8); 
+                                                                                          color: #F5DEB3; 
+                                                                                          border: 2px solid #654321;
+                                                                                          border-radius: 10px;
+                                                                                          font-weight: 600;
+                                                                                          font-size: 11px;
+                                                                                          padding: 6px 10px;
+                                                                                          text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                                                                                          box-shadow: 0 2px 8px rgba(139, 69, 19, 0.4);
+                                                                                          transition: all 0.3s ease;">
+                            <i class="fas fa-plus me-1"></i>Create Post
+                        </a>
+                        <a class="btn btn-sm" href="{{ url_for('funds') }}" style="background: rgba(139, 69, 19, 0.8); 
+                                                                                 color: #F5DEB3; 
+                                                                                 border: 2px solid #654321;
+                                                                                 border-radius: 10px;
+                                                                                 font-weight: 600;
+                                                                                 font-size: 11px;
+                                                                                 padding: 6px 10px;
+                                                                                 text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                                                                                 box-shadow: 0 2px 8px rgba(139, 69, 19, 0.4);
+                                                                                 transition: all 0.3s ease;">
+                            <i class="fas fa-dollar-sign me-1"></i>Funding
+                        </a>
+                        {% if is_admin %}
+                        <a class="btn btn-sm" href="{{ url_for('analytics') }}" style="background: rgba(34, 139, 34, 0.8); 
+                                                                                      color: #F0FFF0; 
+                                                                                      border: 2px solid #228B22;
+                                                                                      border-radius: 10px;
+                                                                                      font-weight: 600;
+                                                                                      font-size: 11px;
+                                                                                      padding: 6px 10px;
+                                                                                      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                                                                                      box-shadow: 0 2px 8px rgba(34, 139, 34, 0.4);
+                                                                                      transition: all 0.3s ease;">
+                            <i class="fas fa-chart-line me-1"></i>Analytics
+                        </a>
+                        {% endif %}
+                        <a class="btn btn-sm" href="{{ url_for('post') }}" style="background: rgba(139, 69, 19, 0.8); 
+                                                                                color: #F5DEB3; 
+                                                                                border: 2px solid #654321;
+                                                                                border-radius: 10px;
+                                                                                font-weight: 600;
+                                                                                font-size: 11px;
+                                                                                padding: 6px 10px;
+                                                                                text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                                                                                box-shadow: 0 2px 8px rgba(139, 69, 19, 0.4);
+                                                                                transition: all 0.3s ease;">
+                            <i class="fas fa-list me-1"></i>Posts
+                        </a>
+                        {% if is_admin %}
+                        <a class="btn btn-sm" href="{{ url_for('external_api_config') }}" style="background: rgba(139, 69, 19, 0.8); 
+                                                                                 color: #F5DEB3; 
+                                                                                 border: 2px solid #654321;
+                                                                                 border-radius: 10px;
+                                                                                 font-weight: 600;
+                                                                                 font-size: 11px;
+                                                                                 padding: 6px 10px;
+                                                                                 text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                                                                                 box-shadow: 0 2px 8px rgba(139, 69, 19, 0.4);
+                                                                                 transition: all 0.3s ease;">
+                            <i class="fas fa-cogs me-1"></i>API Config
+                        </a>
+                        {% endif %}
+                        <a class="btn btn-sm" href="{{ url_for('userProfile') }}" style="background: rgba(139, 69, 19, 0.8); 
+                                                                                       color: #F5DEB3; 
+                                                                                       border: 2px solid #654321;
+                                                                                       border-radius: 10px;
+                                                                                       font-weight: 600;
+                                                                                       font-size: 11px;
+                                                                                       padding: 6px 10px;
+                                                                                       text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                                                                                       box-shadow: 0 2px 8px rgba(139, 69, 19, 0.4);
+                                                                                       transition: all 0.3s ease;">
+                            <i class="fas fa-user me-1"></i>Profile
+                        </a>
+                        <a class="btn btn-sm" href="{{url_for('home')}}" onclick="parent.postMessage('logout', '*')" style="background: rgba(139, 0, 0, 0.8); 
+                                                                                                         color: #FFE4E1; 
+                                                                                                         border: 2px solid #8B0000;
+                                                                                                         border-radius: 10px;
+                                                                                                         font-weight: 600;
+                                                                                                         font-size: 11px;
+                                                                                                         padding: 6px 10px;
+                                                                                                         text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                                                                                                         box-shadow: 0 2px 8px rgba(139, 0, 0, 0.4);
+                                                                                                         transition: all 0.3s ease;">
+                            <i class="fas fa-sign-out-alt me-1"></i>Log Out
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-4">
 <div class="mt-5 indexbar" ></div>
 <div class="row">
     <div class="container">
@@ -12,7 +211,6 @@
                 {% if customSurveys %}
                 
                 <form action="{{ url_for('submit_survey',id=customSurveys[0].id) }}" method="POST">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     {% for item in customSurveys %}
                        
                         {% if item.question_type == 'single' %}
@@ -47,6 +245,12 @@
                 {% endif %}
             </div>
         </div>
+        </div>
     </div>
-</div>
-{% endblock %}
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</body>
+</html>

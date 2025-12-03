@@ -1,0 +1,73 @@
+/* Additional CSS to force Swiper button visibility */
+
+/* Override all default Swiper button styles */
+.swiper-button-next:not(.swiper-button-disabled),
+.swiper-button-prev:not(.swiper-button-disabled) {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 50px !important;
+    height: 50px !important;
+    margin-top: -25px !important;
+    position: absolute !important;
+    top: 50% !important;
+    z-index: 10 !important;
+    cursor: pointer !important;
+    background: rgba(210, 180, 140, 0.9) !important;
+    border: 2px solid #8B4513 !important;
+    border-radius: 50% !important;
+    color: #8B4513 !important;
+    font-weight: bold !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3) !important;
+}
+
+.swiper-button-next:not(.swiper-button-disabled) {
+    right: 10px !important;
+    left: auto !important;
+}
+
+.swiper-button-prev:not(.swiper-button-disabled) {
+    left: 10px !important;
+    right: auto !important;
+}
+
+.swiper-button-next:not(.swiper-button-disabled)::after,
+.swiper-button-prev:not(.swiper-button-disabled)::after {
+    font-family: swiper-icons !important;
+    font-size: 18px !important;
+    font-weight: bold !important;
+    color: #8B4513 !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+    font-variant: initial !important;
+    line-height: 1 !important;
+}
+
+.swiper-button-next:not(.swiper-button-disabled):hover,
+.swiper-button-prev:not(.swiper-button-disabled):hover {
+    background: rgba(139, 69, 19, 0.9) !important;
+    color: #D2B48C !important;
+    transform: scale(1.1) !important;
+    box-shadow: 0 6px 20px rgba(139, 69, 19, 0.5) !important;
+}
+
+.swiper-button-next:not(.swiper-button-disabled):hover::after,
+.swiper-button-prev:not(.swiper-button-disabled):hover::after {
+    color: #D2B48C !important;
+}
+
+/* Ensure swiper container allows buttons */
+.swiper {
+    overflow: visible !important;
+    position: relative !important;
+}
+
+/* Force visibility even when disabled (for single slide) */
+.swiper-button-disabled {
+    opacity: 0.5 !important;
+    display: flex !important;
+}

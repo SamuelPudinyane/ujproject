@@ -1,24 +1,308 @@
-{% extends "base.html"%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blog - Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="icon" type="image/svg+xml" href="../static/images/dummy/UJlogo.jpg">
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/alpinejs" defer></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../static/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../static/css/swiper-fix.css" />
+    <style>
+        body {
+            background: linear-gradient(135deg, #D2B48C 0%, #8B4513 50%, #DEB887 100%);
+            min-height: 100vh;
+            padding-top: 140px; /* Space for fixed navigation */
+        }
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: linear-gradient(135deg, #D2B48C 0%, #8B4513 50%, #DEB887 100%);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            padding: 10px 0;
+        }
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+        }
+        .navbar-brand img {
+            height: 40px;
+            width: auto;
+            margin-right: 10px;
+            border-radius: 5px;
+        }
+        .navbar-brand h4 {
+            color: #FFF8DC;
+            margin: 0;
+            font-weight: 600;
+        }
+        .nav-btn {
+            background: linear-gradient(135deg, #8B4513 0%, #D2B48C 50%, #A0522D 100%);
+            border: 2px solid #654321;
+            color: #FFF8DC;
+            padding: 8px 16px;
+            margin: 0 5px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+        }
+        .nav-btn:hover {
+            background: linear-gradient(135deg, #A0522D 0%, #8B4513 50%, #654321 100%) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4) !important;
+            color: #FFF8DC !important;
+        }
+        .contact-info-section {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            background: rgba(139, 69, 19, 0.1);
+            padding: 10px 0;
+        }
+    </style>
+    <script>
+        function fetchSuggestions() {
+            const query = document.getElementById('searchInput').value;
+            if (query.length > 2) {
+                fetch(`/search_suggestions?q=${query}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        let suggestionsBox = document.getElementById("suggestionsBox");
+                        suggestionsBox.innerHTML = "";
+                        data.forEach(item => {
+                            let suggestion = document.createElement("div");
+                            suggestion.innerHTML = item[0];
+                            suggestion.dataset.column = item[1];
+                            suggestion.classList.add('suggestion-item');
+                            suggestion.onclick = function() {
+                                selectSuggestion(item[0], item[1]);
+                            };
+                            suggestionsBox.appendChild(suggestion);
+                        });
+                    });
+            }
+        }
 
-{%block buttons%}
+        function selectSuggestion(value, column) {
+            document.getElementById('searchInput').value = value;
+            suggestionsBox.innerHTML="";
+        }
+    </script>
+</head>
+<body>
+    <div class="container-fluid nav_header">
+        <div class="top-nav" style="background: linear-gradient(135deg, #D2B48C 0%, #8B4513 50%, #DEB887 100%); 
+                                   box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+                                   border-bottom: 3px solid #8B4513;
+                                   padding: 15px 20px;
+                                   display: flex;
+                                   justify-content: space-between;
+                                   align-items: center;
+                                   flex-wrap: wrap;">
+            <div class="d-flex align-items-center">
+                <a class="navbar-brand logo me-4" href="{{url_for('post')}}">
+                    <img class="logo" src="../static/images/2new logo.png" alt="" style="filter: drop-shadow(2px 2px 4px rgba(139, 69, 19, 0.5)); height: 50px;">
+                </a>
+                <div class="contact-info d-none d-lg-flex align-items-center" style="background: rgba(139, 69, 19, 0.1); 
+                                                                               border-radius: 15px; 
+                                                                               padding: 8px 15px;
+                                                                               backdrop-filter: blur(5px);
+                                                                               font-size: 12px;">
+                    <div class="contact-item me-3" style="color: #2F1B14; font-weight: 600;">
+                        <i class="fas fa-map-marker-alt me-1" style="color: #8B4513;"></i>
+                        <span style="text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.7);">Auckland Park, JHB</span>
+                    </div>
+                    <div class="contact-item me-3" style="color: #2F1B14; font-weight: 600;">
+                        <i class="fas fa-phone me-1" style="color: #8B4513;"></i>
+                        <span style="text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.7);">(+27) 87 820 0840</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Navigation Buttons -->
+            <div class="nav-buttons d-flex align-items-center flex-wrap" style="gap: 8px;">
+                <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" style="background: rgba(139, 69, 19, 0.2); border: 2px solid #8B4513; border-radius: 8px;">
+                    <span class="navbar-toggler-icon" style="color: #8B4513;"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse d-lg-flex" id="navbarNav">
+                    <div class="d-flex flex-wrap align-items-center" style="gap: 6px;">
+                        <a class="btn btn-sm" href="{{ url_for('post') }}" style="background: rgba(139, 69, 19, 0.8); 
+                                                                                   color: #F5DEB3; 
+                                                                                   border: 2px solid #654321;
+                                                                                   border-radius: 10px;
+                                                                                   font-weight: 600;
+                                                                                   font-size: 11px;
+                                                                                   padding: 6px 10px;
+                                                                                   text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                                                                                   box-shadow: 0 2px 8px rgba(139, 69, 19, 0.4);
+                                                                                   transition: all 0.3s ease;">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                        <a class="btn btn-sm" href="{{ url_for('loadmessages') }}" style="background: rgba(139, 69, 19, 0.8); 
+                                                                                         color: #F5DEB3; 
+                                                                                         border: 2px solid #654321;
+                                                                                         border-radius: 10px;
+                                                                                         font-weight: 600;
+                                                                                         font-size: 11px;
+                                                                                         padding: 6px 10px;
+                                                                                         text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                                                                                         box-shadow: 0 2px 8px rgba(139, 69, 19, 0.4);
+                                                                                         transition: all 0.3s ease;">
+                            <i class="fas fa-envelope me-1"></i>Messages
+                        </a>
+                        <a class="btn btn-sm" href="{{ url_for('createNewPost') }}" style="background: rgba(139, 69, 19, 0.8); 
+                                                                                          color: #F5DEB3; 
+                                                                                          border: 2px solid #654321;
+                                                                                          border-radius: 10px;
+                                                                                          font-weight: 600;
+                                                                                          font-size: 11px;
+                                                                                          padding: 6px 10px;
+                                                                                          text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                                                                                          box-shadow: 0 2px 8px rgba(139, 69, 19, 0.4);
+                                                                                          transition: all 0.3s ease;">
+                            <i class="fas fa-plus me-1"></i>Create Post
+                        </a>
+                        <a class="btn btn-sm" href="{{ url_for('funds') }}" style="background: rgba(139, 69, 19, 0.8); 
+                                                                                 color: #F5DEB3; 
+                                                                                 border: 2px solid #654321;
+                                                                                 border-radius: 10px;
+                                                                                 font-weight: 600;
+                                                                                 font-size: 11px;
+                                                                                 padding: 6px 10px;
+                                                                                 text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                                                                                 box-shadow: 0 2px 8px rgba(139, 69, 19, 0.4);
+                                                                                 transition: all 0.3s ease;">
+                            <i class="fas fa-dollar-sign me-1"></i>Funding
+                        </a>
+                        {% if is_admin %}
+                        <a class="btn btn-sm" href="{{ url_for('analytics') }}" style="background: rgba(139, 69, 19, 0.8); 
+                                                                                      color: #F5DEB3; 
+                                                                                      border: 2px solid #654321;
+                                                                                      border-radius: 10px;
+                                                                                      font-weight: 600;
+                                                                                      font-size: 11px;
+                                                                                      padding: 6px 10px;
+                                                                                      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                                                                                      box-shadow: 0 2px 8px rgba(139, 69, 19, 0.4);
+                                                                                      transition: all 0.3s ease;">
+                            <i class="fas fa-chart-line me-1"></i>Analytics
+                        </a>
+                        {% endif %}
+                        <a class="btn btn-sm" href="{{ url_for('post') }}" style="background: rgba(139, 69, 19, 0.8); 
+                                                                                color: #F5DEB3; 
+                                                                                border: 2px solid #654321;
+                                                                                border-radius: 10px;
+                                                                                font-weight: 600;
+                                                                                font-size: 11px;
+                                                                                padding: 6px 10px;
+                                                                                text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                                                                                box-shadow: 0 2px 8px rgba(139, 69, 19, 0.4);
+                                                                                transition: all 0.3s ease;">
+                            <i class="fas fa-list me-1"></i>Posts
+                        </a>
+                        {% if is_admin %}
+                        <a class="btn btn-sm" href="{{ url_for('external_api_config') }}" style="background: rgba(139, 69, 19, 0.8); 
+                                                                                 color: #F5DEB3; 
+                                                                                 border: 2px solid #654321;
+                                                                                 border-radius: 10px;
+                                                                                 font-weight: 600;
+                                                                                 font-size: 11px;
+                                                                                 padding: 6px 10px;
+                                                                                 text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                                                                                 box-shadow: 0 2px 8px rgba(139, 69, 19, 0.4);
+                                                                                 transition: all 0.3s ease;">
+                            <i class="fas fa-cogs me-1"></i>API Config
+                        </a>
+                        {% endif %}
+                        <a class="btn btn-sm" href="{{ url_for('userProfile') }}" style="background: rgba(139, 69, 19, 0.8); 
+                                                                                       color: #F5DEB3; 
+                                                                                       border: 2px solid #654321;
+                                                                                       border-radius: 10px;
+                                                                                       font-weight: 600;
+                                                                                       font-size: 11px;
+                                                                                       padding: 6px 10px;
+                                                                                       text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                                                                                       box-shadow: 0 2px 8px rgba(139, 69, 19, 0.4);
+                                                                                       transition: all 0.3s ease;">
+                            <i class="fas fa-user me-1"></i>Profile
+                        </a>
+                        <a class="btn btn-sm" href="{{url_for('home')}}" onclick="parent.postMessage('logout', '*')" style="background: rgba(139, 0, 0, 0.8); 
+                                                                                                         color: #FFE4E1; 
+                                                                                                         border: 2px solid #8B0000;
+                                                                                                         border-radius: 10px;
+                                                                                                         font-weight: 600;
+                                                                                                         font-size: 11px;
+                                                                                                         padding: 6px 10px;
+                                                                                                         text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                                                                                                         box-shadow: 0 2px 8px rgba(139, 0, 0, 0.4);
+                                                                                                         transition: all 0.3s ease;">
+                            <i class="fas fa-sign-out-alt me-1"></i>Log Out
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Contact Info Section -->
+    <div class="contact-info-section">
+        <div class="container">
+            <div class="contact-info d-flex justify-content-center align-items-center flex-wrap" style="font-size: 0.9em;">
+                <div class="contact-item me-4">
+                    <i class="fas fa-map-marker-alt me-2" style="color: #8B4513;"></i>
+                    <span style="color: #654321;">66 Kingsway Ave, Auckland Park, Johannesburg, 2092</span>
+                </div>
+                <div class="contact-item me-4">
+                    <i class="fas fa-phone me-2" style="color: #8B4513;"></i>
+                    <span style="color: #654321;">(+27) 87 820 0840</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-envelope me-2" style="color: #8B4513;"></i>
+                    <span style="color: #654321;">systemsadmin@jbs.ac.za</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-5 container">
+    <div class="content-posts linkedin-layout">
+      <!-- Left rail: bio container (optional if user is available) -->
+      <div class="bio-container">
+        {% if user %}
+        <div class="image_border">
+          {% if not user['images'] %}
+          <img src="../static/images/user.png" class="img-fluid rounded-circle mb-2" alt="User Image" />
+          {% else %}
+          <img src="../{{user.images}}" class="img-fluid rounded-circle mb-2" alt="User Image" />
+          {% endif %}
+          <h4>
+            <a href="{{ url_for('userProfile') }}">{{ user.first_name }} {{ user.last_name }}</a>
+          </h4>
+          <div class="dm_occ">Occupation: {{ user.occupation }}</div>
+        </div>
+        {% endif %}
+      </div>
 
-<ul class="navbar-nav ml-auto">
-  <li class="nav-item p-2">
-    <a type="button" class="btn btn-primary" href="{{url_for('createAccount')}}">
-      Create Account
-    </a>
-  </li>
-  <li class="nav-item p-2">
-    <a type="button" class="btn btn-primary" href="{{ url_for('login') }}"><i class="fas fa-sign-out-alt"></i>
-      Log In
-    </a>
-  </li>
-</ul>
-<div class="mb-5"></div>
-{%endblock buttons%}
-{%block content%}
-    <div class="row">
-      <div class="col-md-8 content-div container">
+      <!-- Center feed -->
+      <div class="center-post-container">
+        <div class="content-div container">
         <!--for loop starts here to make content dynamic-->
         {% if post|length > 0 %} {% for data in post %}
         <div class="index_container card content-container">
@@ -89,18 +373,18 @@
   
                     <!-- Share button -->
                     <div class="btn-group mr-2" role="group">
-  <form action="{{ url_for('share', postid=data.postId) }}" method="GET">
-  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-  <button 
-        onclick="handleFormSubmit_share(event)"
-        id="shareBtn_{{ data.postId }}"
-        type="submit"
-        class="btn_share btn-like-comment-share btn btn-outline-primary share-button">
-        <i class="fas fa-share"></i>
-        <span>{{ data.shares }}</span> Share
-    </button>
-  </form>
-                  </div>
+                      <form action="{{ url_for('share', postid=data.postId) }}" method="GET">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button 
+                          onclick="handleFormSubmit_share(event)"
+                          id="shareBtn_{{ data.postId }}"
+                          type="submit"
+                          class="btn_share btn-like-comment-share btn btn-outline-primary">
+                          <i class="fas fa-share"></i>
+                          <span>{{ data.shares }}</span> Share
+                        </button>
+                      </form>
+                    </div>
                   </div>
                   <div class="comment-box" x-show="commentBoxOpen">
                     <h6>Comments</h6>
@@ -126,7 +410,13 @@
         
         {% endfor %} {% endif %}
         <!--for loop ends here-->
+        </div>
       </div>
+
+      <!-- Right rail placeholder (hidden on smaller screens via CSS) -->
+      <aside class="right-rail d-none d-lg-block">
+        
+      </aside>
     </div>
 <div class="mt-5"></div>
 
@@ -204,6 +494,62 @@ for (let i = 0; i < btn_share.length; i++) {
     btn_share[i].addEventListener('click', handleFormSubmit_share);
 }
 
+// Enhanced copy function for index.html
+async function copyContentWithMedia(content, mediaUrls) {
+  try {
+    let enhancedContent = content;
+    
+    if (mediaUrls && mediaUrls.length > 0) {
+      enhancedContent += '\n\n🎬 Media Files:\n';
+      mediaUrls.forEach((url, index) => {
+        enhancedContent += `${index + 1}. ${url}\n`;
+      });
+      enhancedContent += '\n💡 Tip: Right-click the media links above and "Save link as" to download files for uploading to social media.';
+    }
+    
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(enhancedContent);
+      return true;
+    } else {
+      const textArea = document.createElement('textarea');
+      textArea.value = enhancedContent;
+      textArea.style.position = 'fixed';
+      textArea.style.opacity = '0';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      
+      const successful = document.execCommand('copy');
+      document.body.removeChild(textArea);
+      
+      if (!successful) {
+        throw new Error('Copy command failed');
+      }
+      return true;
+    }
+  } catch (error) {
+    console.error('Enhanced copy failed:', error);
+    return false;
+  }
+}
+
+function showToast(message, type = 'info') {
+  const existingToast = document.querySelector('.toast-notification');
+  if (existingToast) {
+    existingToast.remove();
+  }
+
+  const toast = document.createElement('div');
+  toast.className = `toast-notification toast-${type}`;
+  toast.textContent = message;
+  
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.remove();
+  }, 3000);
+}
+
 async function handleFormSubmit_share(event) {
     event.preventDefault();    
     const postId = event.target.id.split("_")[1];
@@ -212,47 +558,111 @@ async function handleFormSubmit_share(event) {
         const data = await fetchpost(postId);
         const { title, author, description, media } = data[0];
 
-    // Create share links dynamically
-    const shareIconContainer = document.getElementById(`shareIcons_${postId}`); 
-    if (shareIconContainer) {
-      shareIconContainer.innerHTML=''
-    const facebookShareLink = document.createElement('a');
-    facebookShareLink.href=`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(author)} ${encodeURIComponent(title)} ${encodeURIComponent(description)}`;
-    facebookShareLink.target = "_blank";
-    facebookShareLink.rel = "noopener";
-    facebookShareLink.className = "share-link facebook";
-    facebookShareLink.innerHTML = '<i class="fab fa-facebook"></i> Facebook';
-    
-    const twitterSharLink=document.createElement('a');
-    twitterSharLink.href=`https://twitter.com/intent/tweet?url=${encodeURIComponent(author)} ${encodeURIComponent(title)} ${encodeURIComponent(description)} ${encodeURIComponent(media)}`;
-    twitterSharLink.target="_blank";
-    twitterSharLink.rel="noopener";
-    twitterSharLink.className="share-link twitter";
-    twitterSharLink.innerText=' Twitter';
-      
-    const whatsappShareLink = document.createElement('a');
-    whatsappShareLink.href = `whatsapp://send?text=${title} ${author} ${description}`;
-    whatsappShareLink.target = "_blank";
-    whatsappShareLink.rel = "noopener";
-    whatsappShareLink.className = "share-link whatsapp";
-    whatsappShareLink.innerHTML = '<i class="fab fa-whatsapp"></i> WhatsApp';
+        // Process media content
+        let mediaContent = '';
+        let mediaUrls = [];
+        if (media && Array.isArray(media)) {
+          media.forEach(mediaItem => {
+            const fullMediaUrl = window.location.origin + '/' + mediaItem;
+            mediaUrls.push(fullMediaUrl);
+            const fileName = mediaItem.split('/').pop();
+            mediaContent += `\n📎 ${fileName}`;
+          });
+        }
+        
+        // Create enhanced content to share with media
+        const baseContent = `🎯 ${title}\n👤 By: ${author}\n\n📝 ${description}`;
+        const shareContent = baseContent + mediaContent;
+        const fullShareContent = shareContent + `\n\n🔗 View full post: ${window.location.href}`;
 
-    const linkedInShareLink = document.createElement('a');
-    linkedInShareLink.href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(author)} ${encodeURIComponent(title)} ${encodeURIComponent(description)}`;
-    linkedInShareLink.target = "_blank";
-    linkedInShareLink.rel = "noopener";
-    linkedInShareLink.className = "share-link linkedin";
-    linkedInShareLink.innerHTML = '<i class="fab fa-linkedin"></i> LinkedIn';
+        // Create share links dynamically
+        const shareIconContainer = document.getElementById(`shareIcons_${postId}`); 
+        if (shareIconContainer) {
+            shareIconContainer.innerHTML = '';
+            
+            // Copy to clipboard button
+            const copyButton = document.createElement("button");
+            copyButton.className = "share-link copy-btn";
+            copyButton.innerHTML = '<i class="fas fa-copy"></i> Copy All';
+            copyButton.onclick = async () => {
+              await copyContentWithMedia(fullShareContent, mediaUrls);
+              showToast('Post content and media links copied to clipboard!', 'success');
+            };
+            
+            // Enhanced Facebook share
+            const facebookShareLink = document.createElement('a');
+            facebookShareLink.className = "share-link facebook";
+            facebookShareLink.innerHTML = '<i class="fab fa-facebook"></i> Facebook';
+            facebookShareLink.onclick = async (e) => {
+              e.preventDefault();
+              await copyContentWithMedia(fullShareContent, mediaUrls);
+              const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(shareContent)}`;
+              window.open(fbUrl, '_blank', 'width=600,height=400');
+              showToast('Content copied! Paste it in the Facebook post.', 'info');
+            };
+            
+            // Enhanced Twitter share
+            const twitterShareLink = document.createElement('a');
+            twitterShareLink.className = "share-link twitter";
+            twitterShareLink.innerHTML = '<i class="fab fa-twitter"></i> Twitter';
+            twitterShareLink.onclick = async (e) => {
+              e.preventDefault();
+              const twitterText = shareContent.length > 240 ? shareContent.substring(0, 237) + "..." : shareContent;
+              await copyContentWithMedia(fullShareContent, mediaUrls);
+              const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(twitterText)}&url=${encodeURIComponent(window.location.href)}`;
+              window.open(twitterUrl, '_blank', 'width=600,height=400');
+              showToast('Content copied! You can paste media links in your tweet.', 'info');
+            };
+              
+            // Enhanced WhatsApp share
+            const whatsappShareLink = document.createElement('a');
+            whatsappShareLink.className = "share-link whatsapp";
+            whatsappShareLink.innerHTML = '<i class="fab fa-whatsapp"></i> WhatsApp';
+            whatsappShareLink.onclick = async (e) => {
+              e.preventDefault();
+              await copyContentWithMedia(fullShareContent, mediaUrls);
+              const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(fullShareContent)}`;
+              window.open(whatsappUrl, '_blank');
+              showToast('Full content with media links copied and ready to send!', 'success');
+            };
 
-    shareIconContainer.appendChild(facebookShareLink);
-    shareIconContainer.appendChild(twitterSharLink);
-    shareIconContainer.appendChild(whatsappShareLink);
-    shareIconContainer.appendChild(linkedInShareLink);
+            // Enhanced LinkedIn share
+            const linkedInShareLink = document.createElement('a');
+            linkedInShareLink.className = "share-link linkedin";
+            linkedInShareLink.innerHTML = '<i class="fab fa-linkedin"></i> LinkedIn';
+            linkedInShareLink.onclick = async (e) => {
+              e.preventDefault();
+              await copyContentWithMedia(fullShareContent, mediaUrls);
+              const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}&summary=${encodeURIComponent(shareContent)}`;
+              window.open(linkedinUrl, '_blank', 'width=600,height=400');
+              showToast('Content copied! Paste it in your LinkedIn post.', 'info');
+            };
+
+            // Telegram share
+            const telegramShareLink = document.createElement("a");
+            telegramShareLink.className = "share-link telegram";
+            telegramShareLink.innerHTML = '<i class="fab fa-telegram"></i> Telegram';
+            telegramShareLink.onclick = async (e) => {
+              e.preventDefault();
+              await copyContentWithMedia(fullShareContent, mediaUrls);
+              const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(shareContent)}`;
+              window.open(telegramUrl, '_blank');
+              showToast('Content with media links ready for Telegram!', 'success');
+            };
+
+            shareIconContainer.appendChild(copyButton);
+            shareIconContainer.appendChild(facebookShareLink);
+            shareIconContainer.appendChild(twitterShareLink);
+            shareIconContainer.appendChild(whatsappShareLink);
+            shareIconContainer.appendChild(linkedInShareLink);
+            shareIconContainer.appendChild(telegramShareLink);
+            
+            showToast('Enhanced sharing options ready! Content and media will be copied for each platform.', 'success');
+        }
+    } catch (error) {
+        console.error("Error fetching post:", error);
+        showToast('Error loading share options', 'error');
     }
-  } catch (error) {
-    console.error("Error fetching post:", error);
-  }
-   
 }
 
 async function fetchpost(postId) {
@@ -274,16 +684,55 @@ async function fetchpost(postId) {
 
       // Wait for the DOM to be fully loaded
       document.addEventListener('DOMContentLoaded', function () {
-        // Initialize Swiper after the DOM is ready
-        const swiper = new Swiper('.swiper', {
-          loop: true,
-          pagination: {
-            el: '.swiper-pagination',
-          },
-          navigation: {
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev',
-          },
+        // Initialize enhanced Swiper after the DOM is ready
+        const swiperContainers = document.querySelectorAll('.swiper');
+        
+        swiperContainers.forEach((container, index) => {
+          // Create unique class names for each swiper instance
+          const uniqueClass = `swiper-home-${index}`;
+          container.classList.add(uniqueClass);
+          
+          // Initialize Swiper for each container
+          const swiper = new Swiper(`.${uniqueClass}`, {
+            loop: false,
+            spaceBetween: 10,
+            slidesPerView: 1,
+            centeredSlides: true,
+            autoHeight: false,
+            pagination: {
+              el: `.${uniqueClass} .swiper-pagination`,
+              clickable: true,
+              dynamicBullets: true,
+            },
+            navigation: {
+              nextEl: `.${uniqueClass} .swiper-button-next`,
+              prevEl: `.${uniqueClass} .swiper-button-prev`,
+            },
+            keyboard: {
+              enabled: true,
+            },
+            mousewheel: {
+              forceToAxis: true,
+            },
+            effect: 'slide',
+            speed: 600,
+            grabCursor: true,
+            // Responsive breakpoints
+            breakpoints: {
+              480: {
+                slidesPerView: 1,
+                spaceBetween: 10
+              },
+              768: {
+                slidesPerView: 1,
+                spaceBetween: 15
+              },
+              1024: {
+                slidesPerView: 1,
+                spaceBetween: 20
+              }
+            }
+          });
         });
         
       });
@@ -304,4 +753,14 @@ async function fetchpost(postId) {
   });
   
     </script>
- {%endblock content%}
+    </div>
+    
+    <script>
+        $(document).ready(function() {
+            $('[data-toggle="collapse"]').collapse();
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

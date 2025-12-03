@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>External API Configuration</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #D2B48C 0%, #8B4513 50%, #DEB887 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .config-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        .btn-oak {
+            background: linear-gradient(135deg, #8B4513 0%, #D2B48C 50%, #A0522D 100%);
+            border: 2px solid #654321;
+            color: #FFF8DC;
+        }
+        .btn-oak:hover {
+            background: linear-gradient(135deg, #A0522D 0%, #8B4513 50%, #654321 100%);
+            color: #FFF8DC;
+        }
+        .result-box {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="config-container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-cog"></i> External API Configuration</h2>
+            <a href="{{ url_for('post') }}" class="btn btn-oak">
+                <i class="fas fa-arrow-left"></i> Back to Posts
+            </a>
+        </div>
+        
+        <!-- Current Configuration -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> Current Configuration</h5>
+            </div>
+            <div class="card-body">
+                <div id="currentConfig">Loading...</div>
+                <button class="btn btn-outline-secondary btn-sm mt-2" onclick="loadCurrentConfig()">
+                    <i class="fas fa-refresh"></i> Refresh
+                </button>
+            </div>
+        </div>
+        
+        <!-- Update API URL -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5><i class="fas fa-link"></i> Update External API URL</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="apiUrl" class="form-label">API Base URL:</label>
+                    <input type="url" class="form-control" id="apiUrl" placeholder="http://localhost:5000" 
+                           value="http://localhost:5000">
+                    <div class="form-text">Enter the base URL of your external API (without trailing slash)</div>
+                </div>
+                <button class="btn btn-oak" onclick="updateApiUrl()">
+                    <i class="fas fa-save"></i> Update URL
+                </button>
+                <div id="updateResult" class="result-box" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <!-- Test API Connection -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5><i class="fas fa-flask"></i> Test API Connection</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="testUserId" class="form-label">Test User ID:</label>
+                    <input type="text" class="form-control" id="testUserId" placeholder="Enter a user ID to test">
+                    <div class="form-text">Enter a user ID that exists in your external API</div>
+                </div>
+                <button class="btn btn-oak" onclick="testApiConnection()">
+                    <i class="fas fa-play"></i> Test Connection
+                </button>
+                <div id="testResult" class="result-box" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <!-- Session Debug -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5><i class="fas fa-bug"></i> Debug Session Info</h5>
+            </div>
+            <div class="card-body">
+                <button class="btn btn-oak" onclick="debugSession()">
+                    <i class="fas fa-search"></i> View Session Data
+                </button>
+                <div id="sessionResult" class="result-box" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <!-- Usage Instructions -->
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-question-circle"></i> How to Use</h5>
+            </div>
+            <div class="card-body">
+                <ol>
+                    <li><strong>Update API URL:</strong> Set the correct base URL for your external API</li>
+                    <li><strong>Test Connection:</strong> Use a valid user ID to test if the API is accessible</li>
+                    <li><strong>Access with User ID:</strong> Use URLs like <code>/post?user=USER_ID</code> to automatically fetch user data</li>
+                    <li><strong>Manual Fetch:</strong> Use <code>/fetch_external_user/USER_ID</code> to manually fetch and store user data</li>
+                </ol>
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-lightbulb"></i>
+                    <strong>Note:</strong> The application will automatically try to fetch user data from the external API 
+                    when a user_id parameter is provided. If the API is unavailable, it will fall back to default data.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load current configuration on page load
+        window.onload = function() {
+            loadCurrentConfig();
+        };
+
+        function loadCurrentConfig() {
+            fetch('/config/external_api_url')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('currentConfig').innerHTML = `
+                        <strong>API URL:</strong> ${data.current_external_api_url}<br>
+                        <strong>Status:</strong> <span class="badge bg-success">${data.status}</span>
+                    `;
+                    document.getElementById('apiUrl').value = data.current_external_api_url;
+                })
+                .catch(error => {
+                    document.getElementById('currentConfig').innerHTML = 
+                        `<span class="text-danger">Error loading config: ${error.message}</span>`;
+                });
+        }
+
+        function updateApiUrl() {
+            const url = document.getElementById('apiUrl').value;
+            if (!url) {
+                alert('Please enter a valid URL');
+                return;
+            }
+
+            fetch('/config/external_api_url', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ url: url })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('updateResult');
+                resultDiv.style.display = 'block';
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-success">
+                            <i class="fas fa-check"></i> ${data.message}<br>
+                            <strong>New URL:</strong> ${data.new_url}
+                        </div>
+                    `;
+                    loadCurrentConfig(); // Refresh current config
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-times"></i> Error: ${data.error}
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                document.getElementById('updateResult').innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-times"></i> Network error: ${error.message}
+                    </div>
+                `;
+            });
+        }
+
+        function testApiConnection() {
+            const userId = document.getElementById('testUserId').value;
+            if (!userId) {
+                alert('Please enter a user ID to test');
+                return;
+            }
+
+            fetch(`/debug/external_user/${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const resultDiv = document.getElementById('testResult');
+                    resultDiv.style.display = 'block';
+                    resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                })
+                .catch(error => {
+                    document.getElementById('testResult').innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-times"></i> Error: ${error.message}
+                        </div>
+                    `;
+                });
+        }
+
+        function debugSession() {
+            fetch('/debug/session_info')
+                .then(response => response.json())
+                .then(data => {
+                    const resultDiv = document.getElementById('sessionResult');
+                    resultDiv.style.display = 'block';
+                    resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                })
+                .catch(error => {
+                    document.getElementById('sessionResult').innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-times"></i> Error: ${error.message}
+                        </div>
+                    `;
+                });
+        }
+    </script>
+</body>
+</html>
