@@ -1,36 +1,38 @@
 from flask import Flask,redirect,url_for,render_template,request,jsonify,session,flash
 # Robust imports for local modules when running via Flask CLI or direct python
 try:
-    from user_validation import matchPassword,encryptdata
+    from user_validation import matchPassword, encryptdata
 except ModuleNotFoundError:
-    from .user_validation import matchPassword,encryptdata
+    from .user_validation import matchPassword, encryptdata
 
 try:
     from user import (
-        updatePassword,sharing,likes_update_table_row,increase_like_count,update_likes_delete,decrease_like_count,user_has_liked_post,loadCommentsandUser,
-        loadComments,insert_comment,updateMedia,updateDescription,updateTitle,get_one_post,deletelikes,deletereplies,deletecomments,deleteshare,
-        deletepost,get_post,retrieve_media,activeusers,loadPosts,insertUserIntodb,loginCredentials,selectAllfromUser_with_Id,emailExists,
-        selectAllfromUser,insertBio,insertOccupation,insertContact,insertAddress,insertPostal,insertInterests,insertImage,insertPost,user_has_liked_post,
-        retrievesurvey,survey,get_full_post_content,get_suggestions,load_Posts,delete_profile_picture,insert_share,countPosts,decrease_like_count,insertreplyMessages,
-        All_Surveys,insert_customSurvey_answer,scheduled_task,loadfundings,updateFunding,popup_custom_Surveys,deleteCustomSurveyQuestion,custom_Surveys,customSurveys,insert_survey_name,customSurveys,retrieveCustomizedsurvey,deleteSurveyQuestion,increase_like_count,selectAllmessages,insertMessages,selectAllmessages,countPosts,loadPosts
+        updatePassword, sharing, likes_update_table_row, increase_like_count, update_likes_delete, decrease_like_count, user_has_liked_post, loadCommentsandUser,
+        loadComments, insert_comment, updateMedia, updateDescription, updateTitle, get_one_post, deletelikes, deletereplies, deletecomments, deleteshare,
+        deletepost, get_post, retrieve_media, activeusers, loadPosts, insertUserIntodb, loginCredentials, selectAllfromUser_with_Id, emailExists,
+        selectAllfromUser, insertBio, insertOccupation, insertContact, insertAddress, insertPostal, insertInterests, insertImage, insertPost, user_has_liked_post,
+        retrievesurvey, survey, get_full_post_content, get_suggestions, load_Posts, delete_profile_picture, insert_share, countPosts, decrease_like_count, insertreplyMessages,
+        All_Surveys, insert_customSurvey_answer, scheduled_task, loadfundings, updateFunding, popup_custom_Surveys, deleteCustomSurveyQuestion, custom_Surveys, customSurveys, insert_survey_name, customSurveys, retrieveCustomizedsurvey, deleteSurveyQuestion, increase_like_count, selectAllmessages, insertMessages, selectAllmessages, countPosts, loadPosts
     )
 except ModuleNotFoundError:
     from .user import (
-        updatePassword,sharing,likes_update_table_row,increase_like_count,update_likes_delete,decrease_like_count,user_has_liked_post,loadCommentsandUser,
-        loadComments,insert_comment,updateMedia,updateDescription,updateTitle,get_one_post,deletelikes,deletereplies,deletecomments,deleteshare,
-        deletepost,get_post,retrieve_media,activeusers,loadPosts,insertUserIntodb,loginCredentials,selectAllfromUser_with_Id,emailExists,
-        selectAllfromUser,insertBio,insertOccupation,insertContact,insertAddress,insertPostal,insertInterests,insertImage,insertPost,user_has_liked_post,
-        retrievesurvey,survey,get_full_post_content,get_suggestions,load_Posts,delete_profile_picture,insert_share,countPosts,decrease_like_count,insertreplyMessages,
-        All_Surveys,insert_customSurvey_answer,scheduled_task,loadfundings,updateFunding,popup_custom_Surveys,deleteCustomSurveyQuestion,custom_Surveys,customSurveys,insert_survey_name,customSurveys,retrieveCustomizedsurvey,deleteSurveyQuestion,increase_like_count,selectAllmessages,insertMessages,selectAllmessages,countPosts,loadPosts
+        updatePassword, sharing, likes_update_table_row, increase_like_count, update_likes_delete, decrease_like_count, user_has_liked_post, loadCommentsandUser,
+        loadComments, insert_comment, updateMedia, updateDescription, updateTitle, get_one_post, deletelikes, deletereplies, deletecomments, deleteshare,
+        deletepost, get_post, retrieve_media, activeusers, loadPosts, insertUserIntodb, loginCredentials, selectAllfromUser_with_Id, emailExists,
+        selectAllfromUser, insertBio, insertOccupation, insertContact, insertAddress, insertPostal, insertInterests, insertImage, insertPost, user_has_liked_post,
+        retrievesurvey, survey, get_full_post_content, get_suggestions, load_Posts, delete_profile_picture, insert_share, countPosts, decrease_like_count, insertreplyMessages,
+        All_Surveys, insert_customSurvey_answer, scheduled_task, loadfundings, updateFunding, popup_custom_Surveys, deleteCustomSurveyQuestion, custom_Surveys, customSurveys, insert_survey_name, customSurveys, retrieveCustomizedsurvey, deleteSurveyQuestion, increase_like_count, selectAllmessages, insertMessages, selectAllmessages, countPosts, loadPosts
     )
 
 try:
-    from .analytics_functions import (
+    # Prefer absolute import when running as a top-level module
+    from analytics_functions import (
         get_analytics_overview, get_daily_analytics, get_top_posts,
         get_user_analytics, get_content_analytics, is_admin_user,
         add_admin_user, get_growth_metrics
     )
 except ModuleNotFoundError:
+    # Fallback to relative import when package-context is used
     from .analytics_functions import (
         get_analytics_overview, get_daily_analytics, get_top_posts,
         get_user_analytics, get_content_analytics, is_admin_user,
