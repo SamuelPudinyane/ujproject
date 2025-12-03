@@ -136,7 +136,7 @@ def set_user_session():
         return jsonify({"error": str(e)}), 500
 
 # External API Configuration
-EXTERNAL_API_BASE_URL = "http://localhost:5000"  # Replace with your actual external API URL
+EXTERNAL_API_BASE_URL = "https://society-ed02.onrender.com/"  # Replace with your actual external API URL
 
 def fetch_user_from_external_api(user_id):
     """
@@ -677,7 +677,7 @@ def analytics():
         user_analytics=top_users
     )
 
-    
+
 @app.route('/analytics/migrate', methods=['POST','GET'])
 def analytics_migrate():
     """Run migration to create/update analytics database tables."""
@@ -788,7 +788,7 @@ def submit_survey(id):
             responses[question_id] = value
     insert_customSurvey_answer(id,userId,json.dumps(responses))
     # Redirect to a 'Thank You' page or another route after processing
-    return redirect('http://127.0.0.1:5000/home')
+    return redirect('https://society-ed02.onrender.com/home')
 
 
     
