@@ -10,4 +10,7 @@ except Exception:
     # Fallback for relative import layouts
     from .application import app as application
 
-# Exported name is `application` to match the expected callable
+# Export both names so either `app:application` or `app:app` work
+app = application
+
+# Exported name is `application` to match some deploy configs
