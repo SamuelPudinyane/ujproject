@@ -38,8 +38,25 @@ def get_analytics_overview():
     row = fetchone("SELECT COUNT(*) FROM Shares")
     total_shares = row[0] if row else 0
 
-    # Get new users this month (fallback)
-    new_users_month = 15
+    # Get new users this month (best-effort). If we can't determine, return 0.
+    new_users_month = 0
+    try:
+        # try common column name used in DB schemas
+        row = fetchone("SELECT COUNT(*) FROM \"User\" WHERE date(account_created) >= date('now','start of month')")
+        if row:
+            new_users_month = row[0]
+        else:
+            # try Postgres-style date_trunc if previous query fails or returns None
+            row = fetchone("SELECT COUNT(*) FROM \"User\" WHERE account_created >= date_trunc('month', now())")
+            if row:
+                new_users_month = row[0]
+    except Exception:
+        try:
+            row = fetchone("SELECT COUNT(*) FROM \"User\" WHERE created_at >= date_trunc('month', now())")
+            if row:
+                new_users_month = row[0]
+        except Exception:
+            new_users_month = 0
 
     # active users in last 7 days - best-effort
     try:
@@ -93,22 +110,8 @@ def get_daily_analytics(days=7):
             daily_data = []
 
     if not daily_data:
-        from datetime import date
-        today = date.today()
-        daily_data = []
-        for i in range(days):
-            current_date = today - timedelta(days=i)
-            daily_data.append((
-                current_date.strftime('%Y-%m-%d'),
-                150 + i * 5,
-                8 + (i % 3),
-                89 + i * 2,
-                45 + i * 3,
-                123 + i * 8,
-                567 + i * 15,
-                234 + i * 6,
-                1250 + i * 50,
-            ))
+        # No daily analytics rows found — return empty list so caller uses real data when available.
+        return []
 
     return list(reversed(daily_data))
 
@@ -185,13 +188,7 @@ def get_content_analytics():
     """Get content performance analytics"""
     row = fetchone("SELECT COUNT(*) FROM ContentAnalytics")
     if not row or row[0] == 0:
-        return [
-            ('Technology', 89, 2340, 26.3, 12.4, 8.7),
-            ('Lifestyle', 67, 1890, 28.2, 14.1, 6.3),
-            ('Education', 45, 1456, 32.4, 18.7, 9.1),
-            ('Business', 78, 2156, 27.6, 11.8, 7.9),
-            ('Entertainment', 92, 2678, 29.1, 16.3, 12.4),
-        ]
+        return []
 
     return fetchall(
         """
@@ -255,14 +252,6 @@ def get_growth_metrics():
         )
 
     if not growth_data:
-        from datetime import date
-        today = date.today()
-        growth_data = []
-        total = 150
-        for i in range(30):
-            current_date = today - timedelta(days=29 - i)
-            new_users = 5 + (i % 10)
-            total += new_users
-            growth_data.append((current_date.strftime('%Y-%m-%d'), new_users, total))
+        return []
 
     return list(reversed(growth_data))
