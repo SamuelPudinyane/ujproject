@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # Import the original app but with better error handling
 try:
-    from application import app
+    from app import app
     
     @app.errorhandler(500)
     def internal_error(error):
