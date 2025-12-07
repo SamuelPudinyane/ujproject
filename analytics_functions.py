@@ -23,19 +23,19 @@ def get_analytics_overview():
     total_users = row[0] if row else 0
 
     # Get total posts
-    row = fetchone("SELECT COUNT(*) FROM Post")
+    row = fetchone("SELECT COUNT(*) FROM post")
     total_posts = row[0] if row else 0
 
     # Get total comments
-    row = fetchone("SELECT COUNT(*) FROM Comment")
+    row = fetchone("SELECT COUNT(*) FROM comment")
     total_comments = row[0] if row else 0
 
     # Get total likes
-    row = fetchone("SELECT COUNT(*) FROM Likes")
+    row = fetchone("SELECT COUNT(*) FROM likes")
     total_likes = row[0] if row else 0
 
     # Get total shares
-    row = fetchone("SELECT COUNT(*) FROM Shares")
+    row = fetchone("SELECT COUNT(*) FROM shares")
     total_shares = row[0] if row else 0
 
     # Get new users this month (best-effort). If we can't determine, return 0.
@@ -61,7 +61,7 @@ def get_analytics_overview():
     # active users in last 7 days - best-effort
     try:
         row = fetchone(
-            "SELECT COUNT(DISTINCT user_id) FROM (SELECT user_id FROM Post WHERE post_date >= date('now','-7 days') UNION SELECT user_id FROM Comment WHERE post_date >= date('now','-7 days'))"
+            "SELECT COUNT(DISTINCT user_id) FROM (SELECT user_id FROM post WHERE post_date >= date('now','-7 days') UNION SELECT user_id FROM comment WHERE post_date >= date('now','-7 days'))"
         )
         active_users_week = row[0] if row else 0
     except Exception:
@@ -121,24 +121,24 @@ def get_top_posts(limit=5):
     try:
         return fetchall(
             """
-            SELECT p.title, p.author, p.likes, p.comments, p.shares,
-                   (p.likes + p.comments + p.shares) as total_engagement,
-                   p.post_date
-            FROM Post p
-            ORDER BY total_engagement DESC
-            LIMIT ?
+                 SELECT p.title, p.author, p.likes, p.comments, p.shares,
+                     (p.likes + p.comments + p.shares) as total_engagement,
+                     p.post_date
+                 FROM post p
+                 ORDER BY total_engagement DESC
+                 LIMIT ?
             """,
             (limit,)
         )
     except Exception:
         return fetchall(
             """
-            SELECT p.title, p.author, p.likes, p.comments, p.shares,
-                   (p.likes + p.comments + p.shares) as total_engagement,
-                   p.post_date
-            FROM Post p
-            ORDER BY total_engagement DESC
-            LIMIT %s
+                 SELECT p.title, p.author, p.likes, p.comments, p.shares,
+                     (p.likes + p.comments + p.shares) as total_engagement,
+                     p.post_date
+                 FROM post p
+                 ORDER BY total_engagement DESC
+                 LIMIT %s
             """,
             (limit,)
         )
@@ -149,36 +149,36 @@ def get_user_analytics(limit=10):
     try:
         return fetchall(
             """
-            SELECT u.first_name || ' ' || u.last_name as full_name,
-                   COUNT(DISTINCT p.postId) as post_count,
-                   COUNT(DISTINCT c.commentId) as comment_count,
-                   COUNT(DISTINCT l.likeId) as likes_given,
-                   u.email
-            FROM User u
-            LEFT JOIN Post p ON u.userId = p.user_id
-            LEFT JOIN Comment c ON u.userId = c.user_id
-            LEFT JOIN Likes l ON u.userId = l.user_id
-            GROUP BY u.userId
-            ORDER BY (post_count + comment_count + likes_given) DESC
-            LIMIT ?
+                 SELECT u.first_name || ' ' || u.last_name as full_name,
+                     COUNT(DISTINCT p.postId) as post_count,
+                     COUNT(DISTINCT c.commentId) as comment_count,
+                     COUNT(DISTINCT l.likeId) as likes_given,
+                     u.email
+                 FROM "User" u
+                 LEFT JOIN post p ON u.userId = p.user_id
+                 LEFT JOIN comment c ON u.userId = c.user_id
+                 LEFT JOIN likes l ON u.userId = l.user_id
+                 GROUP BY u.userId
+                 ORDER BY (post_count + comment_count + likes_given) DESC
+                 LIMIT ?
             """,
             (limit,)
         )
     except Exception:
         return fetchall(
             """
-            SELECT u.first_name || ' ' || u.last_name as full_name,
-                   COUNT(DISTINCT p.postId) as post_count,
-                   COUNT(DISTINCT c.commentId) as comment_count,
-                   COUNT(DISTINCT l.likeId) as likes_given,
-                   u.email
-            FROM User u
-            LEFT JOIN Post p ON u.userId = p.user_id
-            LEFT JOIN Comment c ON u.userId = c.user_id
-            LEFT JOIN Likes l ON u.userId = l.user_id
-            GROUP BY u.userId
-            ORDER BY (post_count + comment_count + likes_given) DESC
-            LIMIT %s
+                 SELECT u.first_name || ' ' || u.last_name as full_name,
+                     COUNT(DISTINCT p.postId) as post_count,
+                     COUNT(DISTINCT c.commentId) as comment_count,
+                     COUNT(DISTINCT l.likeId) as likes_given,
+                     u.email
+                 FROM "User" u
+                 LEFT JOIN post p ON u.userId = p.user_id
+                 LEFT JOIN comment c ON u.userId = c.user_id
+                 LEFT JOIN likes l ON u.userId = l.user_id
+                 GROUP BY u.userId
+                 ORDER BY (post_count + comment_count + likes_given) DESC
+                 LIMIT %s
             """,
             (limit,)
         )
