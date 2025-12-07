@@ -23,19 +23,19 @@ def get_analytics_overview():
     total_users = row[0] if row else 0
 
     # Get total posts
-    row = fetchone("SELECT COUNT(*) FROM post")
+    row = fetchone("SELECT COUNT(*) FROM \"Post\"")
     total_posts = row[0] if row else 0
 
     # Get total comments
-    row = fetchone("SELECT COUNT(*) FROM comment")
+    row = fetchone("SELECT COUNT(*) FROM \"Comment\"")
     total_comments = row[0] if row else 0
 
     # Get total likes
-    row = fetchone("SELECT COUNT(*) FROM likes")
+    row = fetchone("SELECT COUNT(*) FROM \"Likes\"")
     total_likes = row[0] if row else 0
 
     # Get total shares
-    row = fetchone("SELECT COUNT(*) FROM shares")
+    row = fetchone("SELECT COUNT(*) FROM \"Shares\"")
     total_shares = row[0] if row else 0
 
     # Get new users this month (best-effort). If we can't determine, return 0.
@@ -61,7 +61,7 @@ def get_analytics_overview():
     # active users in last 7 days - best-effort
     try:
         row = fetchone(
-            "SELECT COUNT(DISTINCT user_id) FROM (SELECT user_id FROM post WHERE post_date >= date('now','-7 days') UNION SELECT user_id FROM comment WHERE post_date >= date('now','-7 days'))"
+            "SELECT COUNT(DISTINCT user_id) FROM (SELECT user_id FROM \"Post\" WHERE post_date >= date('now','-7 days') UNION SELECT user_id FROM \"Comment\" WHERE post_date >= date('now','-7 days'))"
         )
         active_users_week = row[0] if row else 0
     except Exception:
@@ -124,7 +124,7 @@ def get_top_posts(limit=5):
                  SELECT p.title, p.author, p.likes, p.comments, p.shares,
                      (p.likes + p.comments + p.shares) as total_engagement,
                      p.post_date
-                 FROM post p
+                 FROM "Post" p
                  ORDER BY total_engagement DESC
                  LIMIT ?
             """,
@@ -136,7 +136,7 @@ def get_top_posts(limit=5):
                  SELECT p.title, p.author, p.likes, p.comments, p.shares,
                      (p.likes + p.comments + p.shares) as total_engagement,
                      p.post_date
-                 FROM post p
+                 FROM "Post" p
                  ORDER BY total_engagement DESC
                  LIMIT %s
             """,
@@ -155,9 +155,9 @@ def get_user_analytics(limit=10):
                      COUNT(DISTINCT l.likeId) as likes_given,
                      u.email
                  FROM "User" u
-                 LEFT JOIN post p ON u.userId = p.user_id
-                 LEFT JOIN comment c ON u.userId = c.user_id
-                 LEFT JOIN likes l ON u.userId = l.user_id
+                 LEFT JOIN "Post" p ON u.userId = p.user_id
+                 LEFT JOIN "Comment" c ON u.userId = c.user_id
+                 LEFT JOIN "Likes" l ON u.userId = l.user_id
                  GROUP BY u.userId
                  ORDER BY (post_count + comment_count + likes_given) DESC
                  LIMIT ?
@@ -173,9 +173,9 @@ def get_user_analytics(limit=10):
                      COUNT(DISTINCT l.likeId) as likes_given,
                      u.email
                  FROM "User" u
-                 LEFT JOIN post p ON u.userId = p.user_id
-                 LEFT JOIN comment c ON u.userId = c.user_id
-                 LEFT JOIN likes l ON u.userId = l.user_id
+                 LEFT JOIN "Post" p ON u.userId = p.user_id
+                 LEFT JOIN "Comment" c ON u.userId = c.user_id
+                 LEFT JOIN "Likes" l ON u.userId = l.user_id
                  GROUP BY u.userId
                  ORDER BY (post_count + comment_count + likes_given) DESC
                  LIMIT %s

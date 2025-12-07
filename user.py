@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 
 
 def insertUserIntodb(first_name, last_name, date_of_birth, gender, email, occupation,bio, contact_details, home_address, postal_code, password):
-    query="""INSERT INTO User (first_name, last_name, date_of_birth, gender, email, occupation,bio, contact_details, home_address, postal_code, password)VALUES (?,?,?,?,?,?,?,?,?,?,?)"""
+    query="""INSERT INTO "User" (first_name, last_name, date_of_birth, gender, email, occupation,bio, contact_details, home_address, postal_code, password)VALUES (?,?,?,?,?,?,?,?,?,?,?)"""
     conn = sqlite3.connect('blog.db')
     cursor = conn.cursor()
     try:
@@ -71,7 +71,7 @@ def emailExists(email):
         
         
 def selectAllfromUser(email):
-    query="""SELECT * from User WHERE email=?"""
+    query="""SELECT * from "User" WHERE email=?"""
     conn = sqlite3.connect('blog.db')
     cursor = conn.cursor()
     try:
@@ -91,7 +91,7 @@ def selectAllfromUser(email):
         conn.close()
         
 def selectAllmessages(senderId, receiverId):
-    query="""SELECT * from Messages WHERE senderId=? AND receiverId=?"""
+    query="""SELECT * from "Messages" WHERE senderId=? AND receiverId=?"""
     conn = sqlite3.connect('blog.db')
     cursor = conn.cursor()
     try:
@@ -113,7 +113,7 @@ def selectAllmessages(senderId, receiverId):
         
         
 def selectAllfromUser_with_Id(id):
-    query="""SELECT * from User WHERE userId=?"""
+    query="""SELECT * from "User" WHERE userId=?"""
     conn = sqlite3.connect('blog.db')
     cursor = conn.cursor()
     try:
@@ -132,7 +132,7 @@ def selectAllfromUser_with_Id(id):
 
         
 def insertBio(user_id,bio):
-    query="""UPDATE User SET bio=? WHERE userId=?"""
+    query="""UPDATE "User" SET bio=? WHERE userId=?"""
     conn = sqlite3.connect('blog.db')
     cursor = conn.cursor()
     try:
@@ -145,7 +145,7 @@ def insertBio(user_id,bio):
         
 
 def insertOccupation(user_id,occupation):
-    query="""UPDATE User SET occupation=? where userId=?"""
+    query="""UPDATE "User" SET occupation=? where userId=?"""
     conn = sqlite3.connect('blog.db')
     cursor = conn.cursor()
     try:
@@ -158,7 +158,7 @@ def insertOccupation(user_id,occupation):
 
 
 def insertContact(user_id,contact):
-    query="""UPDATE User SET contact_details=? WHERE userId=?"""
+    query="""UPDATE "User" SET contact_details=? WHERE userId=?"""
     conn = sqlite3.connect('blog.db')
     cursor = conn.cursor()
     try:
@@ -171,7 +171,7 @@ def insertContact(user_id,contact):
         
         
 def insertAddress(user_id,address):
-    query="""UPDATE User SET home_address=? WHERE userId=?"""
+    query="""UPDATE "User" SET home_address=? WHERE userId=?"""
     conn = sqlite3.connect('blog.db')
     cursor = conn.cursor()
     try:
@@ -185,7 +185,7 @@ def insertAddress(user_id,address):
         
         
 def insertPostal(user_id,postal_code):
-    query="""UPDATE User SET postal_code=? WHERE userId=?"""
+    query="""UPDATE "User" SET postal_code=? WHERE userId=?"""
     conn = sqlite3.connect('blog.db')
     cursor = conn.cursor()
     try:
@@ -199,7 +199,7 @@ def insertPostal(user_id,postal_code):
         
         
 def insertInterests(user_id,interests):
-    query="""UPDATE User SET interests=? WHERE userId=?"""
+    query="""UPDATE "User" SET interests=? WHERE userId=?"""
     conn = sqlite3.connect('blog.db')
     cursor = conn.cursor()
     try:
@@ -211,7 +211,7 @@ def insertInterests(user_id,interests):
         conn.close()
 
 def insertImage(user_id,image):
-    query="""UPDATE User SET images=? WHERE userId=?"""
+    query="""UPDATE "User" SET images=? WHERE userId=?"""
     conn = sqlite3.connect('blog.db')
     cursor = conn.cursor()
     try:
@@ -223,7 +223,7 @@ def insertImage(user_id,image):
         conn.close()
         
 def insertPostimage(user_id,image):
-    query="""UPDATE Post SET images=? WHERE user_Id=?"""
+    query="""UPDATE "Post" SET images=? WHERE user_Id=?"""
     conn = sqlite3.connect('blog.db')
     cursor = conn.cursor()
     try:
@@ -236,7 +236,7 @@ def insertPostimage(user_id,image):
         
         
 def insertPostvideo(user_id,video):
-    query="""UPDATE Post SET video=? WHERE user_Id=?"""
+    query="""UPDATE "Post" SET video=? WHERE user_Id=?"""
     conn = sqlite3.connect('blog.db')
     cursor = conn.cursor()
     try:
@@ -250,7 +250,7 @@ def insertPostvideo(user_id,video):
 def insertPost(userId, title, description,media):
     user=selectAllfromUser_with_Id(userId)
     author=user['first_name']+' '+user['last_name']
-    query = """INSERT INTO Post (user_id, author, title, description, media) VALUES (?, ?, ?, ?, ?)"""
+    query = """INSERT INTO "Post" (user_id, author, title, description, media) VALUES (?, ?, ?, ?, ?)"""
     conn = sqlite3.connect('blog.db')
     cursor = conn.cursor()
     try:
@@ -263,7 +263,7 @@ def insertPost(userId, title, description,media):
 
 
 def updateTitle(post_id,title):
-    query="""UPDATE Post SET title=? WHERE postId=?"""
+    query="""UPDATE "Post" SET title=? WHERE postId=?"""
     conn = sqlite3.connect('blog.db')
     cursor = conn.cursor()
     try:
@@ -276,7 +276,7 @@ def updateTitle(post_id,title):
         
         
 def updateDescription(post_id,description):
-    query="""UPDATE Post SET description=? WHERE postId=?"""
+    query="""UPDATE "Post" SET description=? WHERE postId=?"""
     conn = sqlite3.connect('blog.db')
     cursor = conn.cursor()
     try:
@@ -288,7 +288,7 @@ def updateDescription(post_id,description):
         conn.close()
 
 def updateMedia(post_id,media):
-    query="""UPDATE Post SET media=? WHERE postId=?"""
+    query="""UPDATE "Post" SET media=? WHERE postId=?"""
     conn = sqlite3.connect('blog.db')
     cursor = conn.cursor()
     try:
@@ -300,7 +300,7 @@ def updateMedia(post_id,media):
         conn.close()
 
 def updateOldPost(postId, userId, title, description,media):
-    query = """UPDATE Post SET user_id=?, title=?, description=?, media=? WHERE postId=?"""
+    query = """UPDATE "Post" SET user_id=?, title=?, description=?, media=? WHERE postId=?"""
     conn = sqlite3.connect('blog.db')
     cursor = conn.cursor()
     try:
@@ -316,7 +316,7 @@ def updateOldPost(postId, userId, title, description,media):
 def get_post(userId):
     conn = sqlite3.connect('blog.db')
     cursor = conn.cursor()
-    query = "SELECT * FROM Post WHERE user_id = ?"
+    query = "SELECT * FROM \"Post\" WHERE user_id = ?"
     cursor.execute(query, (userId,))
     posts = cursor.fetchall()
     if posts:
@@ -333,7 +333,7 @@ def get_post(userId):
 def get_one_post(post_id):
     conn = sqlite3.connect('blog.db')
     cursor = conn.cursor()
-    query = "SELECT * FROM Post WHERE postId = ?"
+    query = "SELECT * FROM \"Post\" WHERE postId = ?"
     cursor.execute(query, (post_id,))
     posts = cursor.fetchone()
     if posts:
@@ -348,7 +348,7 @@ def get_one_post(post_id):
 
 
 def deletepost(userId,post_id):
-    query = """DELETE FROM Post WHERE user_id=? AND postId=?"""
+    query = """DELETE FROM "Post" WHERE user_id=? AND postId=?"""
     conn = sqlite3.connect('blog.db')
     cursor = conn.cursor()
     try:
@@ -360,7 +360,7 @@ def deletepost(userId,post_id):
         conn.close()
 
 def deleteshare(post_id):
-    query = """DELETE FROM Shares WHERE post_id=?"""
+    query = """DELETE FROM "Shares" WHERE post_id=?"""
     conn = sqlite3.connect('blog.db')
     cursor = conn.cursor()
     try:
