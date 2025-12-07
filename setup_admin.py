@@ -12,7 +12,7 @@ def setup_admin_users():
     cursor = conn.cursor()
     
     # Check if any users exist
-    cursor.execute("SELECT userId, first_name, last_name, email FROM User LIMIT 10")
+        cursor.execute("SELECT userId, first_name, last_name, email FROM \"User\" LIMIT 10")
     users = cursor.fetchall()
     
     if not users:
@@ -37,7 +37,7 @@ def setup_admin_users():
             user_id = int(user_id)
         
         # Verify user exists
-        cursor.execute("SELECT first_name, last_name, email FROM User WHERE userId = ?", (user_id,))
+            cursor.execute("SELECT first_name, last_name, email FROM \"User\" WHERE userId = ?", (user_id,))
         user_info = cursor.fetchone()
         
         if not user_info:
@@ -67,9 +67,9 @@ def list_current_admins():
     cursor = conn.cursor()
     
     cursor.execute("""
-        SELECT u.userId, u.first_name, u.last_name, u.email, a.admin_level, a.granted_date
-        FROM User u
-        JOIN AdminUsers a ON u.userId = a.user_id
+            SELECT u.userId, u.first_name, u.last_name, u.email, a.admin_level, a.granted_date
+            FROM \"User\" u
+            JOIN "AdminUsers" a ON u.userId = a.user_id
         ORDER BY a.admin_level DESC, a.granted_date ASC
     """)
     

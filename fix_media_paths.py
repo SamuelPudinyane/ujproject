@@ -18,7 +18,7 @@ def update_media_paths():
         cursor = conn.cursor()
         
         # Get all posts with media
-        cursor.execute("SELECT postId, media FROM Post WHERE media IS NOT NULL AND media != ''")
+        cursor.execute("SELECT postId, media FROM \"Post\" WHERE media IS NOT NULL AND media != ''")
         posts = cursor.fetchall()
         
         print(f"Found {len(posts)} posts with media")
@@ -35,7 +35,7 @@ def update_media_paths():
                 )
                 
                 # Update the database
-                cursor.execute("UPDATE Post SET media = ? WHERE postId = ?", (new_media_string, post_id))
+                cursor.execute("UPDATE \"Post\" SET media = ? WHERE postId = ?", (new_media_string, post_id))
                 print(f"Updated post {post_id} media to: {new_media_string}")
         
         conn.commit()
