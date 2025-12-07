@@ -657,7 +657,7 @@ def decrease_like_count(post_id):
     # Connect to the SQLite database
     conn = sqlite3.connect('blog.db')
     cursor = conn.cursor()
-    cursor.execute("UPDATE Post SET likes = likes - 1 WHERE postId = ?", (post_id,))
+    cursor.execute("UPDATE \"Post\" SET likes = likes - 1 WHERE postId = ?", (post_id,))
     
     conn.commit()
     
@@ -667,14 +667,14 @@ def decrease_like_count(post_id):
 def update_likes_delete(userId,post_id):
     conn = sqlite3.connect('blog.db')
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM Likes  WHERE user_id = ? AND post_id=?", (userId,post_id))
+    cursor.execute("DELETE FROM \"Likes\" WHERE user_id = ? AND post_id=?", (userId,post_id))
     
     conn.commit()
     
     conn.close()
 
 def likes_update_table_row(userId,post_id):
-    query = """INSERT INTO Likes (post_id, user_id) VALUES (?, ?)"""
+    query = """INSERT INTO \"Likes\" (post_id, user_id) VALUES (?, ?)"""
     conn = sqlite3.connect('blog.db')
     cursor = conn.cursor()
     try:
@@ -691,7 +691,7 @@ def increase_like_count(post_id):
     # Connect to the SQLite database
     conn = sqlite3.connect('blog.db')
     cursor = conn.cursor()
-    cursor.execute("UPDATE Post SET likes = likes + 1 WHERE postId = ?", (post_id,))
+    cursor.execute("UPDATE \"Post\" SET likes = likes + 1 WHERE postId = ?", (post_id,))
     
     conn.commit()
     

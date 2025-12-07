@@ -13,11 +13,11 @@ def comprehensive_comment_test():
     cursor = conn.cursor()
     
     # Get current comment count from Post table
-    cursor.execute('SELECT comments FROM Post WHERE postId = 4')
+    cursor.execute('SELECT comments FROM "Post" WHERE postId = 4')
     initial_post_count = cursor.fetchone()[0]
     
     # Get current comments from Comment table
-    cursor.execute('SELECT COUNT(*) FROM Comment WHERE post_id = 4')
+    cursor.execute('SELECT COUNT(*) FROM "Comment" WHERE post_id = 4')
     initial_comment_count = cursor.fetchone()[0]
     
     print(f"Initial state:")
@@ -40,10 +40,10 @@ def comprehensive_comment_test():
         conn = sqlite3.connect('blog.db')
         cursor = conn.cursor()
         
-        cursor.execute('SELECT comments FROM Post WHERE postId = 4')
+        cursor.execute('SELECT comments FROM "Post" WHERE postId = 4')
         new_post_count = cursor.fetchone()[0]
         
-        cursor.execute('SELECT COUNT(*) FROM Comment WHERE post_id = 4')
+        cursor.execute('SELECT COUNT(*) FROM "Comment" WHERE post_id = 4')
         new_comment_count = cursor.fetchone()[0]
         
         print(f"After direct insertion:")
@@ -56,7 +56,7 @@ def comprehensive_comment_test():
             print("✗ Comment count NOT updated correctly!")
         
         # Get the latest comment
-        cursor.execute('SELECT text FROM Comment WHERE post_id = 4 ORDER BY commentId DESC LIMIT 1')
+        cursor.execute('SELECT text FROM "Comment" WHERE post_id = 4 ORDER BY commentId DESC LIMIT 1')
         latest = cursor.fetchone()
         if latest and latest[0] == test_comment_text:
             print("✓ Comment inserted correctly!")
