@@ -666,26 +666,40 @@ window.charts.userGrowthChart = new Chart(userGrowthCtx, {
 
 // Engagement Chart
 const engagementCtx = document.getElementById('engagementChart').getContext('2d');
-window.charts.engagementChart = new Chart(engagementCtx, {
-    type: 'doughnut',
-    data: {
-        labels: ['Likes', 'Comments', 'Shares'],
-        datasets: [{
-            data: [{{ analytics_overview.total_likes }}, {{ analytics_overview.total_comments }}, {{ analytics_overview.total_shares }}],
-            backgroundColor: ['#8B4513', '#D2B48C', '#F4A460'],
-            borderWidth: 2,
-            borderColor: '#fff'
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'bottom',
+const engagementData = [{{ analytics_overview.total_likes }}, {{ analytics_overview.total_comments }}, {{ analytics_overview.total_shares }}];
+const engagementTotal = engagementData.reduce((a, b) => a + b, 0);
+if (engagementTotal === 0) {
+    engagementCtx.font = '16px Arial';
+    engagementCtx.fillText('No engagement data available', 40, 60);
+} else {
+    window.charts.engagementChart = new Chart(engagementCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Likes', 'Comments', 'Shares'],
+            datasets: [{
+                data: engagementData,
+                backgroundColor: ['#8B4513', '#D2B48C', '#F4A460'],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const value = context.parsed;
+                            const percent = engagementTotal ? ((value / engagementTotal) * 100).toFixed(1) : 0;
+                            return `${context.label}: ${value} (${percent}%)`;
+                        }
+                    }
+                }
             }
         }
-    }
-});
+    });
+}
 
 // Active vs New Users (bar)
 const usersCompareCtx = document.getElementById('usersCompareChart').getContext('2d');
@@ -732,18 +746,53 @@ const totalActive = activeUsersSeries.reduce((a,b)=>a+(b||0),0) || 1;
 const mobile = Math.round(totalActive * 0.55);
 const desktop = Math.round(totalActive * 0.35);
 const tablet = Math.round(totalActive * 0.10);
+const deviceData = [mobile, desktop, tablet];
+const deviceTotal = deviceData.reduce((a, b) => a + b, 0);
 window.charts.devicesChart = new Chart(devicesCtx, {
     type: 'doughnut',
-    data: { labels: ['Mobile','Desktop','Tablet'], datasets: [{ data: [mobile, desktop, tablet], backgroundColor: ['#8B4513','#D2B48C','#F4A460'] }] },
-    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+    data: {
+        labels: ['Mobile','Desktop','Tablet'],
+        datasets: [{ data: deviceData, backgroundColor: ['#8B4513','#D2B48C','#F4A460'] }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'bottom' },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const value = context.parsed;
+                        const percent = deviceTotal ? ((value / deviceTotal) * 100).toFixed(1) : 0;
+                        return `${context.label}: ${value} (${percent}%)`;
+                    }
+                }
+            }
+        }
+    }
 });
 
 // Browsers (placeholder share)
 const browsersCtx = document.getElementById('browsersChart').getContext('2d');
+const browserData = [50,20,10,15,5];
+const browserTotal = browserData.reduce((a, b) => a + b, 0);
 window.charts.browsersChart = new Chart(browsersCtx, {
     type: 'pie',
-    data: { labels: ['Chrome','Safari','Firefox','Edge','Other'], datasets: [{ data: [50,20,10,15,5], backgroundColor: ['#8B4513','#D2B48C','#F4A460','#CD853F','#A0522D'] }] },
-    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+    data: { labels: ['Chrome','Safari','Firefox','Edge','Other'], datasets: [{ data: browserData, backgroundColor: ['#8B4513','#D2B48C','#F4A460','#CD853F','#A0522D'] }] },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'bottom' },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const value = context.parsed;
+                        const percent = browserTotal ? ((value / browserTotal) * 100).toFixed(1) : 0;
+                        return `${context.label}: ${value} (${percent}%)`;
+                    }
+                }
+            }
+        }
+    }
 });
 
 // Avg View Duration (synthetic from activity)
